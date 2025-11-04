@@ -23,6 +23,7 @@ use App\Http\Controllers\InsightController;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\File;
 
 
 Route::get('/', function () {
@@ -54,103 +55,43 @@ Route::middleware('auth:admin')->group(function () {
     Route::resource('yatchshop', YatchShopController::class);
     Route::resource('cryptos', CryptocurrencyController::class);
     Route::resource('insights', InsightController::class);
+    Route::get('/bulk-import-modal', function () {
+        $subfolders = Storage::disk('public')->directories();
+        return view('bulk-import-form', compact('subfolders'));
+    })->name('bulk.import.form');
 
-    // Route::get('/bulk-import-form', function (Request $request) {
-    //     $folder = $request->get('folder', '');
-    //     $directories = Storage::disk('public')->directories();
-
-    //     $images = [];
-
-    //     if ($folder && Storage::disk('public')->exists($folder)) {
-    //         $files = Storage::disk('public')->files($folder);
-    //     } else {
-    //         $files = Storage::disk('public')->allFiles();
-    //     }
-
-    //     foreach ($files as $file) {
-    //         if (preg_match('/\.(jpg|jpeg|png|gif|webp)$/i', $file)) {
-    //             $images[] = [
-    //                 'url' => asset('storage/' . $file),
-    //                 'path' => $file,
-    //                 'folder' => Str::beforeLast($file, '/'),
-    //                 'name' => basename($file),
-    //             ];
-    //         }
-    //     }
-
-    //     return view('bulk-import-form', compact('images', 'directories', 'fo lder'));
-    // })->name('bulk.import.form');
-    // Route::get('/bulk-import-form', function (Request $request) {
-    //     $folder = $request->get('folder', '');
-
-    //     $directories = Storage::disk('public')->directories();
-    //     $subfolders = [];
-    //     $images = [];
-
-    //     if ($folder && Storage::disk('public')->exists($folder)) {
-    //         $subfolders = Storage::disk('public')->directories($folder);
-    //         $allFiles = Storage::disk('public')->allFiles($folder);
-
-    //         foreach ($allFiles as $file) {
-    //             if (preg_match('/\.(jpg|jpeg|png|gif|webp)$/i', $file)) {
-    //                 $images[] = [
-    //                     'url' => asset('storage/' . $file),
-    //                     'path' => $file,
-    //                     'name' => basename($file),
-    //                     'folder' => Str::beforeLast($file, '/')
-    //                 ];
-    //             }
-    //         }
-    //     }
-
-    //     if (request()->ajax()) {
-    //         return response()->json([
-    //             'subfolders' => $subfolders,
-    //             'images' => $images,
-    //         ]);
-    //     }
-
-    //     return view('bulk-import-form', compact('directories', 'subfolders', 'images', 'folder'));
-    // })->name('bulk.import.form');
-
-    Route::get('/bulk-import-form', function (Request $request) {
-        $folder = $request->get('folder', ''); // relative path inside storage/app/public
-
-        // Get top-level directories
-        $directories = Storage::disk('public')->directories();
+    Route::get('/bulk-import-folder', function (Request $request) {
+        $folder = $request->get('folder', '');
+        $disk = Storage::disk('public');
 
         $subfolders = [];
         $images = [];
 
-        if ($folder) {
-            // Subfolders inside current folder
-            $subfolders = Storage::disk('public')->directories($folder);
+        if (empty($folder)) {
+            $subfolders = $disk->directories('');
+        }
 
-            // All files (including images) inside current folder
-            $allFiles = Storage::disk('public')->files($folder);
+        elseif ($disk->exists($folder)) {
+            $subfolders = $disk->directories($folder);
 
-            foreach ($allFiles as $file) {
+            $files = $disk->files($folder);
+            foreach ($files as $file) {
                 if (preg_match('/\.(jpg|jpeg|png|gif|webp)$/i', $file)) {
                     $images[] = [
                         'url' => asset('storage/' . $file),
-                        'path' => $file,
                         'name' => basename($file),
-                        'folder' => Str::beforeLast($file, '/')
+                        'path' => $file,
                     ];
                 }
             }
         }
 
-        if ($request->ajax()) {
-            return response()->json([
-                'subfolders' => $subfolders,
-                'images' => $images,
-            ]);
-        }
-
-        return view('bulk-import-form', compact('directories', 'subfolders', 'images', 'folder'));
-    })->name('bulk.import.form');
-
+        return response()->json([
+            'subfolders' => $subfolders,
+            'images' => $images,
+            'currentFolder' => $folder,
+        ]);
+    })->name('bulk.import.folder');
     Route::post('/shares/bulk-import', [ShareController::class, 'bulkImport'])->name('share.bulk.import');
     Route::post('/properties/bulk-import', [PropertyController::class, 'bulkImport'])->name('properties.bulk.import');
     Route::post('/yachts/bulk-import', [YatchShopController::class, 'bulkImport'])->name('yatch.bulk.import');

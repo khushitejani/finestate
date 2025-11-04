@@ -9,7 +9,7 @@
         </a>
     </div>
 
-
+    
     <div id="dropZone" class="drop-zone text-center mb-3">
         <i class="bi bi-cloud-arrow-up fs-1 text-secondary d-block mb-2"></i>
         <p class="mb-1 text-muted">
@@ -19,7 +19,7 @@
         <input type="file" id="fileInput" name="import_file" hidden>
     </div>
 
-    <div id="uploadedList" class="uploaded-files"></div>
+    <div id="uploadedList" class="uploaded-files mb-3"></div>
 
     <div class="text-end mt-3">
         <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancel</button>
@@ -27,104 +27,31 @@
     </div>
 </form>
 
-{{-- <div class="row">
-    <div class="col-md-12 grid-margin stretch-card">
-        <div class="card">
-            <div class="card-body">
+<h4 class="fw-bold text-success mb-3">
+    <i class="bi bi-folder2-open me-2"></i> Storage Explorer
+</h4>
+<div id="breadcrumbContainer" class="mb-3">
+    <small class="text-muted">
+        <i class="bi bi-folder2-open me-2 text-success"></i>
+        <span id="breadcrumbPath" class="fw-semibold text-success">Root</span>
+    </small>
+</div>
 
-                <div class="d-sm-flex align-items-center mb-4">
-                    <h4 class="card-title mb-sm-0">Stored Images</h4>
-
-                    <form method="GET" class="ms-auto d-flex">
-                        <select name="folder" class="form-select form-select-sm me-2" style="width:200px;">
-                            <option value="">All Folders</option>
-                            @foreach ($directories as $dir)
-                                <option value="{{ $dir }}" {{ request('folder') === $dir ? 'selected' : '' }}>
-                                    {{ ucfirst($dir) }}
-                                </option>
-                            @endforeach
-                        </select>
-                        <button class="btn btn-sm btn-primary">Filter</button>
-                    </form>
-                </div>
-
-                <div class="row">
-                    @forelse($images as $image)
-                        <div class="col-md-2 col-sm-3 col-4 mb-4 text-center">
-                            <div class="border rounded p-2">
-                                <img src="{{ $image['url'] }}" class="img-fluid rounded mb-2"
-                                    style="height:100px; object-fit:cover;">
-                                <div class="small text-muted" style="word-break:break-all;">
-                                    {{ $image['name'] }}
-                                </div>
-                                <div class="text-muted small">{{ $image['folder'] }}</div>
-                            </div>
-                        </div>
-                    @empty
-                        <p class="text-center text-muted mt-3">No images found.</p>
-                    @endforelse
-                </div>
-
+<div id="folderContents" class="row mt-4">
+    @foreach ($subfolders as $folder)
+        <div class="col-6 col-sm-4 col-md-3 col-lg-2 text-center mb-4">
+            <div class="folder-item" data-path="{{ $folder }}">
+                <i class="bi bi-folder-fill fs-1 d-block mb-2"></i>
+                <div class="folder-name small text-truncate">{{ basename($folder) }}</div>
             </div>
         </div>
-    </div>
-</div> --}}
-<div class="folders-container mb-3"></div>
-<div class="images-container"></div>
-
-<style>
-    .drop-zone {
-        border: 2px dashed #198754;
-        border-radius: 12px;
-        padding: 40px 20px;
-        background-color: #f9fafb;
-        cursor: pointer;
-        transition: 0.3s;
-    }
-
-    .drop-zone:hover {
-        background-color: #e9f7ef;
-        border-color: #157347;
-    }
-
-    .uploaded-file {
-        border: 1px solid #e0e0e0;
-        border-radius: 8px;
-        padding: 10px 15px;
-        margin-bottom: 10px;
-        display: flex;
-        align-items: center;
-        gap: 15px;
-    }
-
-    .uploaded-file i,
-    .uploaded-file img {
-        width: 60px;
-        height: 60px;
-        flex-shrink: 0;
-        object-fit: cover;
-        border-radius: 4px;
-        color: #198754;
-        font-size: 2.5rem;
-    }
-
-    .file-info {
-        flex-grow: 1;
-    }
-
-    .progress {
-        height: 6px;
-        border-radius: 4px;
-        margin-top: 6px;
-    }
-</style>
-
+    @endforeach
+</div>
 <script>
     const dropZone = document.getElementById('dropZone');
     const fileInput = document.getElementById('fileInput');
     const uploadedList = document.getElementById('uploadedList');
 
-    // Only CSV & Excel are valid
     const validExtensions = ['csv', 'xls', 'xlsx'];
 
     function getFileIcon(fileName) {
@@ -137,14 +64,13 @@
     function animateProgress(fileEl, isValid) {
         let progress = 0;
         const progressBar = fileEl.querySelector('.progress-bar');
-        const percent = fileEl.querySelector('.percent');
+        const percentLabel = fileEl.querySelector('.percent');
 
         const interval = setInterval(() => {
             if (progress >= 100) {
                 clearInterval(interval);
                 const statusIcon = document.createElement('i');
                 statusIcon.classList.add('ms-2');
-
                 if (isValid) {
                     progressBar.classList.add('bg-success');
                     statusIcon.classList.add('bi', 'bi-check-circle-fill', 'text-success');
@@ -156,124 +82,207 @@
             } else {
                 progress += 5;
                 progressBar.style.width = progress + '%';
-                percent.textContent = progress + '%';
+                percentLabel.textContent = progress + '%';
             }
-        }, 100);
+        }, 50);
     }
 
+    // function handleFiles(files) {
+    //     if (!files.length) return;
+    //     const file = files[0];
+    //     uploadedList.innerHTML = ''; // clear previous
+
+    //     const ext = file.name.split('.').pop().toLowerCase();
+    //     const isValid = validExtensions.includes(ext);
+
+    //     const dt = new DataTransfer();
+    //     if (isValid) dt.items.add(file);
+    //     fileInput.files = dt.files;
+
+    //     const fileEl = document.createElement('div');
+    //     fileEl.classList.add('uploaded-file');
+    //     fileEl.innerHTML = `
+    //     <i class="bi ${getFileIcon(file.name)}"></i>
+    //     <div class="file-info">
+    //         <div class="fw-semibold">${file.name}</div>
+    //         <div class="progress"><div class="progress-bar" role="progressbar" style="width:0%"></div></div>
+    //     </div>
+    //     <span class="text-muted small percent">0%</span>
+    // `;
+    //     uploadedList.appendChild(fileEl);
+
+    //     animateProgress(fileEl, isValid);
+    // }
     function handleFiles(files) {
-        if (files.length === 0) return;
-        const file = files[0];
+        if (!files.length) return;
+        uploadedList.innerHTML = ''; 
 
-        uploadedList.innerHTML = ''; // clear previous
-        const ext = file.name.split('.').pop().toLowerCase();
-        const isValid = validExtensions.includes(ext);
+        const dt = new DataTransfer(); 
 
-        // Only assign valid file to form input
-        const dt = new DataTransfer();
-        if (isValid) dt.items.add(file);
-        fileInput.files = dt.files;
+        Array.from(files).forEach(file => {
+            const ext = file.name.split('.').pop().toLowerCase();
+            const isValid = validExtensions.includes(ext);
 
-        const fileEl = document.createElement('div');
-        fileEl.classList.add('uploaded-file');
+            if (isValid) dt.items.add(file);
 
-        const iconClass = getFileIcon(file.name);
-        fileEl.innerHTML = `
-        <i class="bi ${iconClass}"></i>
-        <div class="file-info">
-            <div class="fw-semibold">${file.name}</div>
-            <div class="progress"><div class="progress-bar" role="progressbar" style="width:0%"></div></div>
-        </div>
-        <span class="text-muted small percent">0%</span>
-    `;
+            const fileEl = document.createElement('div');
+            fileEl.classList.add('uploaded-file');
+            fileEl.innerHTML = `
+            <i class="bi ${getFileIcon(file.name)}"></i>
+            <div class="file-info">
+                <div class="fw-semibold">${file.name}</div>
+                <div class="progress"><div class="progress-bar" role="progressbar" style="width:0%"></div></div>
+            </div>
+            <span class="text-muted small percent">0%</span>
+        `;
+            uploadedList.appendChild(fileEl);
 
-        uploadedList.appendChild(fileEl);
-        animateProgress(fileEl, isValid);
+            animateProgress(fileEl, isValid);
+        });
+
+        fileInput.files = dt.files; // set all files to input
     }
+
+    // Click & drag/drop events
     dropZone.addEventListener('click', () => fileInput.click());
     dropZone.addEventListener('dragover', e => {
         e.preventDefault();
         dropZone.style.backgroundColor = '#e9f7ef';
     });
-    dropZone.addEventListener('dragleave', () => {
-        dropZone.style.backgroundColor = '#f9fafb';
-    });
+    dropZone.addEventListener('dragleave', () => dropZone.style.backgroundColor = '#f9fafb');
     dropZone.addEventListener('drop', e => {
         e.preventDefault();
         dropZone.style.backgroundColor = '#f9fafb';
         handleFiles(e.dataTransfer.files);
     });
-
     fileInput.addEventListener('change', e => handleFiles(e.target.files));
-</script>
-<script>
-    (function($) {
-        const foldersContainer = $('.folders-container');
-        const imagesContainer = $('.images-container');
-        const breadcrumbContainer = $('.breadcrumb-container');
 
-        let currentFolder = '';
+    function loadFolder(folder = '') {
+        $.get('{{ route('bulk.import.folder') }}', {
+            folder: folder
+        }, function(res) {
+            const folderContents = $('#folderContents');
+            const breadcrumbPath = $('#breadcrumbPath');
 
-        const loadFolders = (folder = '') => {
-            $.get(`/bulk-import-form?folder=${folder}`).done((res) => {
-                foldersContainer.empty();
-                imagesContainer.empty();
-                breadcrumbContainer.empty();
+            folderContents.empty();
 
-                // Breadcrumb
-                const parts = folder ? folder.split('/') : [];
-                let pathAccumulator = '';
-                breadcrumbContainer.append(
-                    `<button type="button" class="breadcrumb-btn btn btn-sm btn-light me-1 mb-1" data-folder="">Root</button>`
-                );
-                parts.forEach(part => {
-                    pathAccumulator = pathAccumulator ? pathAccumulator + '/' + part : part;
-                    breadcrumbContainer.append(
-                        `<button type="button" class="breadcrumb-btn btn btn-sm btn-light me-1 mb-1" data-folder="${pathAccumulator}">${part}</button>`
-                    );
-                });
+            // Build breadcrumb (always starts with Root)
+            let pathParts = folder ? folder.split('/') : [];
+            let breadcrumbHTML = `<a href="#" class="breadcrumb-link text-success" data-path="">Root</a>`;
 
-                // Subfolders
-                if (res.subfolders && res.subfolders.length) {
-                    res.subfolders.forEach(sub => {
-                        const folderName = sub.split('/').pop();
-                        foldersContainer.append(`
-                        <button type="button" class="folder-btn btn btn-outline-secondary btn-sm me-2 mb-2" data-folder="${folderName}">
-                            ${folderName}
-                        </button>
-                    `);
-                    });
+            let fullPath = '';
+            pathParts.forEach((part, index) => {
+                fullPath += (index === 0 ? '' : '/') + part;
+
+                if (index === pathParts.length - 1) {
+                    breadcrumbHTML +=
+                        ' <span class="text-muted">›</span> ' +
+                        `<span class="fw-bold text-success">${part}</span>`;
+                } else {
+                    breadcrumbHTML +=
+                        ' <span class="text-muted">›</span> ' +
+                        `<a href="#" class="breadcrumb-link text-success" data-path="${fullPath}">${part}</a>`;
                 }
 
-                // Images
-                if (res.images && res.images.length) {
-                    res.images.forEach(img => {
-                        imagesContainer.append(`
-                        <div class="image-item d-inline-block m-1 text-center">
-                            <img src="${img.url}" alt="${img.name}" width="80" style="object-fit:cover;">
-                            <div class="text-truncate" style="max-width:80px;">${img.name}</div>
+            });
+
+            breadcrumbPath.html(breadcrumbHTML);
+            if (folder === '') {
+                if (res.subfolders.length === 0) {
+                    folderContents.html(`
+                    <div class="text-center text-muted py-5">
+                        <i class="bi bi-folder-x fs-1 d-block mb-2"></i>
+                        <p>No folders found in root directory.</p>
+                    </div>
+                `);
+                    return;
+                }
+
+                res.subfolders.forEach(sub => {
+                    const folderName = sub.split('/').pop();
+                    const isActive = sub === folder;
+
+                    folderContents.append(`
+                        <div class="col-6 col-sm-4 col-md-3 col-lg-2 text-center mb-4">
+                            <div class="folder-item ${isActive ? 'active' : ''}" data-path="${sub}">
+                                <i class="bi bi-folder-fill fs-1 d-block mb-2"></i>
+                                <div class="folder-name small text-truncate">${folderName}</div>
+                            </div>
                         </div>
                     `);
-                    });
-                }
+                });
+                return;
+            }
+
+            // If no subfolders or images in a subfolder
+            if (res.subfolders.length === 0 && res.images.length === 0) {
+                folderContents.html(`
+                <div class="text-center text-muted py-5">
+                    <i class="bi bi-folder-x fs-1 d-block mb-2"></i>
+                    <p>No subfolders or images found in this folder.</p>
+                </div>
+            `);
+                return;
+            }
+
+            // Show subfolders
+            res.subfolders.forEach(sub => {
+                folderContents.append(`
+                <div class="col-6 col-sm-4 col-md-3 col-lg-2 text-center mb-4">
+                    <div class="folder-item" data-path="${sub}">
+                        <i class="bi bi-folder-fill fs-1 d-block mb-2"></i>
+                        <div class="folder-name small text-truncate">${sub.split('/').pop()}</div>
+                    </div>
+                </div>
+            `);
             });
-        }
 
-        // Click subfolder
-        foldersContainer.on('click', '.folder-btn', function() {
-            const folderName = $(this).data('folder');
-            currentFolder = currentFolder ? currentFolder + '/' + folderName : folderName;
-            loadFolders(currentFolder);
+            res.images.forEach(img => {
+                folderContents.append(`
+                    <div class="col-6 col-sm-4 col-md-3 col-lg-2 text-center mb-4 image-item">
+                        <img src="${img.url}" alt="${img.name}"
+                            class="rounded mb-2"
+                            style="width: 120px; height: 120px; object-fit: contain; border: 1px solid #e5e5e5; background-color: #fff; padding: 4px;">
+                        <div class="small fw-semibold text-dark text-truncate w-100" title="${img.name}">
+                            ${img.name}
+                        </div>
+                    </div>
+                `);
+            });
+        }).fail(function() {
+            $('#folderContents').html(`
+            <div class="text-center text-danger py-5">
+                <i class="bi bi-exclamation-triangle fs-1 d-block mb-2"></i>
+                <p>Error loading folder. Please try again.</p>
+            </div>
+        `);
+        });
+    }
+    $(document).on('click', '.folder-item', function() {
+        const folderPath = $(this).data('path');
+        loadFolder(folderPath);
+    });
+    $(document).on('click', '.breadcrumb-link', function(e) {
+        e.preventDefault();
+        const path = $(this).data('path');
+        loadFolder(path);
+    });
+
+    function initFolderExplorer() {
+        $(document).off('click', '.folder-item');
+        $(document).on('click', '.folder-item', function() {
+            const folder = $(this).data('path');
+            loadFolder(folder);
         });
 
-        // Breadcrumb click
-        breadcrumbContainer.on('click', '.breadcrumb-btn', function() {
-            currentFolder = $(this).data('folder');
-            loadFolders(currentFolder);
+        $(document).off('click', '#breadcrumbContainer button');
+        $(document).on('click', '#breadcrumbContainer button', function() {
+            const folder = $(this).data('folder');
+            loadFolder(folder);
         });
+    }
 
-        // Initial load
-        loadFolders();
-
-    })(jQuery);
+    $(document).ready(function() {
+        initFolderExplorer();
+    });
 </script>

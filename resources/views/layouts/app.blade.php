@@ -453,6 +453,8 @@
                 myModal.show();
                 $('#commonmodal').on('hidden.bs.modal', function() {
                     modalDialog.removeClass('modal-xl');
+                    initDropzone();
+                    initFolderExplorer();
                 });
             });
         });
