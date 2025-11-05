@@ -23,7 +23,7 @@ use App\Http\Controllers\InsightController;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\File;
+use App\Http\Controllers\BulkImportController;
 
 
 Route::get('/', function () {
@@ -69,9 +69,7 @@ Route::middleware('auth:admin')->group(function () {
 
         if (empty($folder)) {
             $subfolders = $disk->directories('');
-        }
-
-        elseif ($disk->exists($folder)) {
+        } elseif ($disk->exists($folder)) {
             $subfolders = $disk->directories($folder);
 
             $files = $disk->files($folder);
@@ -127,6 +125,9 @@ Route::middleware('auth:admin')->group(function () {
 
 
 
+
+    Route::post('/bulk-import/upload', [BulkImportController::class, 'upload'])->name('bulk.import.upload');
+    Route::get('/bulk-import/list', [BulkImportController::class, 'list'])->name('bulk.import.list');
 
 
 
