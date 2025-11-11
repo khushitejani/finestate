@@ -125,9 +125,14 @@ Route::middleware('auth:admin')->group(function () {
 
 
 
-
+    // BulkImport
     Route::post('/bulk-import/upload', [BulkImportController::class, 'upload'])->name('bulk.import.upload');
     Route::get('/bulk-import/list', [BulkImportController::class, 'list'])->name('bulk.import.list');
+    Route::post('/move', [BulkImportController::class, 'move'])->name('bulk.import.move');
+    Route::post('/bulk/delete', [BulkImportController::class, 'delete'])->name('bulk.import.delete');
+    Route::post('/bulk/rename', [BulkImportController::class, 'rename'])->name('bulk.import.rename');
+    Route::post('bulk-import/paste', [BulkImportController::class, 'paste'])->name('bulk.import.paste');
+
 
 
 
