@@ -505,7 +505,7 @@
                     message.removeClass('text-success').addClass('text-danger');
 
                     video.load();
-                    video.loop = false; // remove loop
+                    video.loop = false; 
                     video.currentTime = 0;
 
                     var resultModal = new bootstrap.Modal(document.getElementById('resultModal'));

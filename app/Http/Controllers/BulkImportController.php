@@ -10,10 +10,45 @@ use Illuminate\Support\Facades\File;
 
 class BulkImportController extends Controller
 {
+    public function Index(Request $request)
+    {
+        $subfolders = Storage::disk('public')->directories();
+        return view('bulk-import-form', compact('subfolders'));
+    }
+
+    public function getAllFolders(Request $request)
+    {
+        $folder = $request->get('folder', '');
+        $disk = Storage::disk('public');
+
+        $subfolders = [];
+        $images = [];
+
+        if (empty($folder)) {
+            $subfolders = $disk->directories('');
+        } elseif ($disk->exists($folder)) {
+            $subfolders = $disk->directories($folder);
+
+            $files = $disk->files($folder);
+            foreach ($files as $file) {
+                if (preg_match('/\.(jpg|jpeg|png|gif|webp)$/i', $file)) {
+                    $images[] = [
+                        'url' => asset('storage/' . $file),
+                        'name' => basename($file),
+                        'path' => $file,
+                    ];
+                }
+            }
+        }
+
+        return response()->json([
+            'subfolders' => $subfolders,
+            'images' => $images,
+            'currentFolder' => $folder,
+        ]);
+    }
     public function upload(Request $request)
     {
-        Log::info('Upload started.');
-
         $folder = trim($request->input('folder', ''), '/');
         $paths = $request->input('paths', []);
         $files = $request->file('files');
@@ -108,6 +143,9 @@ class BulkImportController extends Controller
         ]);
     }
 
+    /**
+     * List files and folders inside a folder.
+     */
     public function folder(Request $request)
     {
         $folder = trim($request->input('folder', ''), '/');
@@ -133,6 +171,9 @@ class BulkImportController extends Controller
         ]);
     }
 
+    /**
+     * Move selected items to target folder.
+     */
     public function move(Request $request)
     {
         $items = $request->input('items', []);
@@ -175,6 +216,9 @@ class BulkImportController extends Controller
         ]);
     }
 
+    /**
+     * Delete selected files or folders.
+     */
     public function delete(Request $request)
     {
         $items = $request->input('items', []);
@@ -193,7 +237,7 @@ class BulkImportController extends Controller
     }
 
     /**
-     * Rename a folder or file
+     * Rename a file or folder.
      */
     public function rename(Request $request)
     {
@@ -213,5 +257,82 @@ class BulkImportController extends Controller
         }
 
         return response()->json(['success' => true]);
+    }
+    /**
+     * Paste selected files or folders to the target folder.
+     */
+    public function paste(Request $request)
+    {
+        $items = $request->input('items', []);
+        $targetFolder = trim($request->input('target', ''), '/');
+
+        foreach ($items as $itemPath) {
+            $source = trim($itemPath, '/');
+            $basename = basename($source);
+            $destination = $targetFolder ? $targetFolder . '/' . $basename : $basename;
+
+            if ($targetFolder === $source || str_starts_with($targetFolder, $source . '/')) {
+                continue;
+            }
+
+            $counter = 1;
+            $originalDestination = $destination;
+            while (Storage::disk('public')->exists($destination)) {
+                $fileBase = pathinfo($basename, PATHINFO_FILENAME);
+                $fileExt = pathinfo($basename, PATHINFO_EXTENSION);
+                $fileExt = $fileExt ? '.' . $fileExt : '';
+                $destination = $targetFolder
+                    ? $targetFolder . '/' . $fileBase . "($counter)" . $fileExt
+                    : $fileBase . "($counter)" . $fileExt;
+                $counter++;
+            }
+
+            if (Storage::disk('public')->exists($source)) {
+                if (is_dir(Storage::disk('public')->path($source))) {
+                    File::copyDirectory(
+                        Storage::disk('public')->path($source),
+                        Storage::disk('public')->path($destination)
+                    );
+                } else {
+                    File::copy(
+                        Storage::disk('public')->path($source),
+                        Storage::disk('public')->path($destination)
+                    );
+                }
+            }
+        }
+
+        return response()->json(['success' => true]);
+    }
+
+    public function createFolder(Request $request)
+    {
+        $currentFolder = trim($request->input('folder', ''), '/');
+        $newFolderName = trim($request->input('name'));
+
+        if (!$newFolderName) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Folder name is required'
+            ], 400);
+        }
+
+        $newFolderPath = $currentFolder ? $currentFolder . '/' . $newFolderName : $newFolderName;
+        $newFolderPath = trim($newFolderPath, '/');
+
+        $originalPath = $newFolderPath;
+        $counter = 1;
+        while (Storage::disk('public')->exists($newFolderPath)) {
+            $newFolderPath = $originalPath . "($counter)";
+            $counter++;
+        }
+
+        Storage::disk('public')->makeDirectory($newFolderPath, 0755, true);
+
+        return response()->json([
+            'success' => true,
+            'folder' => $newFolderPath,
+            'message' => 'Folder created successfully'
+        ]);
     }
 }

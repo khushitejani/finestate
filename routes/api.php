@@ -18,6 +18,7 @@ use App\Http\Controllers\Api\RetroCarController;
 use App\Http\Controllers\Api\StampController;
 use App\Http\Controllers\Api\UniqueItemController;
 use App\Http\Controllers\Api\YatchShopController;
+use App\Http\Controllers\Api\BusinessTaxiController;
 
 Route::get('/cards', [CardController::class, 'CardListAll']);
 Route::get('/shares', [ShareController::class, 'ShareListAll']);
@@ -36,6 +37,7 @@ Route::get('/stamps', [StampController::class, 'StampListAll']);
 Route::get('/yatchshops', [YatchShopController::class, 'YatchShopListAll']);
 Route::get('/insights', [InsightController::class, 'InsightListAll']);
 Route::get('/cryptocurrencies',[CryptocurrencyController::class,'CryptoCurrancyListAll']);
+Route::get('/businesstaxis', [BusinessTaxiController::class, 'BusinessTexilistAll']);
 
 
 

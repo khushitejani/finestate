@@ -90,6 +90,13 @@
                 </a>
             </li>
 
+            <li class="nav-item">
+                <a class="nav-link" href="{{ route('business-taxis.index') }}" aria-expanded="false"
+                    aria-controls="business-taxis">
+                    <span class="menu-title">Business Taxis</span>
+                    <i class="icon-directions menu-icon"></i>
+                </a>
+            </li>
 
             <li class="nav-item">
                 <a class="nav-link" href="{{ route('jewelleds.index') }}" aria-expanded="false"
