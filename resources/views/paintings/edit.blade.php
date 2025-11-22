@@ -24,37 +24,33 @@
             placeholder="Enter price" required value="{{ old('price', $painting->price) }}">
     </div>
 
-    <div class="mb-3">
-        <label for="paintingImage" class="form-label">Upload Image</label>
-        <input type="file" class="form-control" id="paintingImage" name="image" accept="image/*" value="">
+    <div id="card-image-uploader-modal" data-output-width="400" data-output-height="400" data-aspect-ratio="1"
+        class="mb-3">
+        <label class="form-label fw-bold d-block">Share Image</label>
 
-        @if ($painting->image)
-            <p>Current Image:</p>
-            <img src="{{ asset('storage/' . $painting->image) }}" alt="Current Painting Image"
-                style="max-width: 200px; margin-top: 10px;" id="imageDisplay">
-        @endif
+        <div class="ciu-box mx-auto position-relative"
+            style="width:100%; max-width:500px; height:auto; cursor:pointer;
+            display:flex; align-items:center; justify-content:center;
+            background:#f9f9f9; border:2px dashed #ccc; border-radius:12px; overflow:hidden; min-height:200px;">
+            @php
+                $imageUrl =
+                    isset($painting) && $painting->image && file_exists(public_path('storage/' . $painting->image))
+                        ? asset('storage/' . $painting->image)
+                        : asset('default.jpeg'); 
+            @endphp
+
+            <img class="ciu-preview" id="imagePreview" alt="Preview"
+                style="width:auto; height:auto; max-width:100%; max-height:500px; 
+                   {{ isset($painting) && $imageUrl ? '' : 'display:none;' }}"
+                src="{{ $imageUrl }}">
+            <span class="ciu-placeholder"
+                style="font-size:2rem; color:#888; {{ isset($painting) && $imageUrl ? 'display:none;' : '' }}">
+                + Image
+            </span>
+        </div>
+
+        <input type="file" class="ciu-input d-none" name="image" id="imageInput" accept="image/*">
     </div>
 
     <button type="submit" class="btn btn-primary">Save Changes</button>
 </form>
-
-<script>
-    const paintingImageInput = document.getElementById('paintingImage');
-    const imageDisplay = document.getElementById('imageDisplay');
-
-    paintingImageInput.addEventListener('change', function() {
-        const file = this.files[0];
-        if (file) {
-            // Replace old image src with new image preview
-            imageDisplay.src = URL.createObjectURL(file);
-        } else {
-            // If no file selected, reset src to old image URL
-            imageDisplay.src = "{{ asset('storage/' . $painting->image) }}";
-        }
-    });
-
-    // Clear file input on page load to avoid old filename pre-filled
-    window.addEventListener('load', () => {
-        paintingImageInput.value = '';
-    });
-</script>

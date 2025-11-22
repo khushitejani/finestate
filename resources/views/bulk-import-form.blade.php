@@ -1,17 +1,17 @@
-<form id="bulkImportForm" method="POST" action="" enctype="multipart/form-data"> @csrf <div
-        class="d-flex justify-content-between align-items-center mb-3">
-        <h5 class="text-success fw-bold mb-0"> <i class="bi bi-cloud-arrow-up me-2"></i> Bulk Upload </h5> <a
-            href="" class="btn btn-info btn-sm" id="downloadDemoBtn" target="_blank"> <i
-                class="bi bi-file-earmark-spreadsheet me-1"></i> Download Demo Excel </a>
+<form id="bulkImportForm" method="POST" action="" enctype="multipart/form-data"> @csrf
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h5 class="text-success fw-bold mb-0"> <i class="bi bi-cloud-arrow-up me-2"></i> Bulk Upload </h5>
+        <a href="" class="btn btn-info btn-sm" id="downloadDemoBtn" target="_blank">
+            <i class="bi bi-file-earmark-spreadsheet me-1"></i> Download Demo Excel </a>
     </div>
     <div id="dropZone" class="drop-zone text-center mb-3"> <i
             class="bi bi-cloud-arrow-up fs-1 text-secondary d-block mb-2"></i>
         <p class="mb-1 text-muted"> Drop file here or <span class="text-success fw-semibold">click to upload</span> </p>
-        <small class="text-muted">Only one file (CSV, Excel) under 5MB</small> <input type="file" id="fileInput"
-            name="import_file" hidden>
+        <small class="text-muted">Only one file (CSV, Excel) under 5MB</small>
+        <input type="file" id="fileInput" name="import_file" hidden>
     </div>
-    <div id="uploadedList" class="uploaded-files mb-3"></div> <input type="hidden" name="folder" id="folderInput"
-        value="">
+    <div id="uploadedList" class="uploaded-files mb-3"></div>
+    <input type="hidden" name="folder" id="folderInput" value="">
     <div class="text-end mt-3"> <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancel</button>
         <button type="submit" class="btn btn-success" id="submitBtn">Submit</button>
     </div>
@@ -97,18 +97,18 @@
                     data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body"> <small class="text-muted mb-2">Current Path: <span
-                        id="moveCurrentPath">Root</span></small>
-                <div id="moveFolderContainer" class="row"> <!-- Folder tree will be dynamically loaded here -->
+                        id="moveCurrentPath">Root</span>
+                </small>
+                <div id="moveFolderContainer" class="row">
                 </div>
             </div>
-            <div class="modal-footer"> <button type="button" class="btn btn-secondary"
-                    data-bs-dismiss="modal">Cancel</button> <button type="button" class="btn btn-primary"
-                    id="confirmMoveBtn" disabled>Move Here</button> </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" id="confirmMoveBtn">Move Here</button>
+            </div>
         </div>
     </div>
 </div>
-
-
 <input type="file" id="storageFileInput" multiple webkitdirectory mozdirectory msdirectory odirectory hidden>
 <style>
     .folder-item.selected {
@@ -142,6 +142,18 @@
     .folder-item:hover {
         background-color: #f1f5f9;
     }
+
+    .folder-item.selected {
+        background-color: #e9f7ef;
+        /* Green highlight */
+        border-radius: 6px;
+    }
+
+    .image-item.selected {
+        border: 2px solid #0f5132;
+        border-radius: 4px;
+        background-color: #e9f7ef33;
+    }
 </style>
 <script>
     const dropZone = document.getElementById('dropZone');
@@ -160,6 +172,7 @@
     };
     let moveSelectedFolder = null;
     let moveCurrentPath = '';
+    let droppedFile = null;
 
     // -----------------------------
     // Utility Functions
@@ -210,31 +223,70 @@
 
     function handleFiles(files) {
         if (!files.length) return;
+
         const file = files[0];
+
+        const uploadedList = document.getElementById('uploadedList');
+        const fileInput = document.getElementById('fileInput');
+
         uploadedList.innerHTML = '';
 
+        const validExtensions = ['csv', 'xlsx', 'xls'];
         const ext = file.name.split('.').pop().toLowerCase();
         const isValid = validExtensions.includes(ext);
 
         const dt = new DataTransfer();
         if (isValid) dt.items.add(file);
-        fileInput.files = dt.files;
+        droppedFile = file;
 
-        const fileEl = document.createElement('div');
-        fileEl.classList.add('uploaded-file');
-        fileEl.innerHTML = `
-            <i class="bi ${getFileIcon(file.name)}"></i>
-            <div class="file-info">
-                <div class="fw-semibold">${file.name}</div>
-                <div class="progress">
-                    <div class="progress-bar" role="progressbar" style="width:0%"></div>
-                </div>
+        // Create UI
+        const wrap = document.createElement('div');
+        wrap.className = 'uploaded-file';
+
+        wrap.innerHTML = `
+        <i class="bi bi-file-earmark"></i>
+        <div class="file-info">
+            <div class="fw-semibold">${file.name}</div>
+            <div class="progress">
+                <div class="progress-bar" role="progressbar" style="width: 0%"></div>
             </div>
-            <span class="text-muted small percent">0%</span>
-        `;
-        uploadedList.appendChild(fileEl);
-        animateProgress(fileEl, isValid);
+        </div>
+        <span class="percent small text-muted">0%</span>
+    `;
+
+        uploadedList.appendChild(wrap);
+
+        animateProgress(wrap, isValid);
     }
+
+    // function handleFiles(files) {
+    //     if (!files.length) return;
+    //     const file = files[0];
+    //     uploadedList.innerHTML = '';
+
+    //     const ext = file.name.split('.').pop().toLowerCase();
+    //     const isValid = validExtensions.includes(ext);
+
+    //     const dt = new DataTransfer();
+    //     if (isValid) dt.items.add(file);
+    //     fileInput.files = dt.files;
+
+    //     const fileEl = document.createElement('div');
+    //     fileEl.classList.add('uploaded-file');
+    //     fileEl.innerHTML = `
+    //         <i class="bi ${getFileIcon(file.name)}"></i>
+    //         <div class="file-info">
+    //             <div class="fw-semibold">${file.name}</div>
+    //             <div class="progress">
+    //                 <div class="progress-bar" role="progressbar" style="width:0%"></div>
+    //             </div>
+    //         </div>
+    //         <span class="text-muted small percent">0%</span>
+    //     `;
+    //     uploadedList.appendChild(fileEl);
+    //     animateProgress(fileEl, isValid);
+    // }
+
 
     // -----------------------------
     // Drag & Drop Upload
@@ -298,10 +350,16 @@
             // Images
             res.images.forEach(img => {
                 folderContents.append(`
-                    <div class="col-6 col-sm-4 col-md-3 col-lg-2 text-center mb-4 image-item">
-                        <img src="${img.url}" alt="${img.name}" class="rounded mb-2" style="width:120px;height:120px;object-fit:contain;border:1px solid #e5e5e5;background:#fff;padding:4px;">
-                        <div class="small fw-semibold text-dark text-truncate w-100" title="${img.name}">${img.name}</div>
+                    <div class="col-6 col-sm-4 col-md-3 col-lg-2 text-center mb-4 image-item" 
+                    data-path="${img.path}">
+                    <img src="${img.url}" alt="${img.name}" class="rounded mb-2" 
+                        style="width:120px;height:120px;object-fit:contain;border:1px solid #e5e5e5;background:#fff;padding:4px;">
+                        <div class="small fw-semibold text-dark text-truncate w-100" 
+                            title="${img.name}">
+                            ${img.name}
+                        </div>
                     </div>
+
                 `);
             });
 
@@ -366,7 +424,7 @@
             });
 
             moveSelectedFolder = null;
-            $('#confirmMoveBtn').prop('disabled', true);
+            $('#confirmMoveBtn').prop('disabled', false);
         });
     }
 
@@ -392,7 +450,7 @@
     });
 
     // -----------------------------
-    // Folder Navigation
+    // Folder NavigationmoveCurrentPath
     // -----------------------------
     $(document).on('dblclick', '.folder-item', function() {
         loadFolder($(this).data('path'));
@@ -447,11 +505,56 @@
         updateActionButtons();
     }
 
-    $(document).on('click', '.folder-item', function(e) {
-        $('.folder-item').removeClass('active');
+    // $(document).on('click', '.folder-item', function(e) {
+    //     $('.folder-item').removeClass('active');
+    //     $(this).addClass('active');
+    //     handleSelection(this, 'folder', e);
+    // });
+
+    // $(document).on('click', '.folder-item, .image-item', function(e) {
+    //     const isFolder = $(this).hasClass('folder-item');
+    //     const type = isFolder ? 'folder' : 'image';
+    //     if (!(e.ctrlKey || e.metaKey)) {
+    //         if (isFolder) {
+    //             $('.image-item').removeClass('active selected');
+    //             selectedItems = selectedItems.filter(p => $('.folder-item[data-path="' + p + '"]').length);
+    //         } else {
+    //             $('.folder-item').removeClass('active selected');
+    //             selectedItems = selectedItems.filter(p => $('.image-item[data-path="' + p + '"]').length);
+    //         }
+    //     }
+    //     handleSelection(this, type, e);
+    //     $(this).addClass('active');
+    //     if (!(e.ctrlKey || e.metaKey)) {
+    //         $(`.${type}-item`).not(this).removeClass('active');
+    //     }
+    // });
+
+    $(document).on('click', '.folder-item, .image-item', function(e) {
+        const isFolder = this.classList.contains('folder-item');
+        const type = isFolder ? 'folder' : 'image';
+
+        // Ctrl/Shift multi-select
+        handleSelection(this, type, e);
+
+        // Highlight active
+        $('.folder-item, .image-item').removeClass('active');
         $(this).addClass('active');
-        handleSelection(this, 'folder', e);
+
+        updateActionButtons();
     });
+
+
+
+    // $(document).on('dblclick', '.image-item', function () {
+    // const imgUrl = $(this).find('img').attr('src');
+    // window.open(imgUrl, '_blank');
+    // });
+
+    // $(document).on('dblclick', '.move-folder-item', function() {
+    //     const path = $(this).data('path');
+    //     loadMoveFolder(path);
+    // });
 
     // -----------------------------
     // Upload Events
@@ -558,39 +661,52 @@
             }
         });
     });
-
     // -----------------------------
     // Move
     // -----------------------------
     $('#btnMove').click(() => {
         if (!selectedItems.length) return;
         const moveModal = new bootstrap.Modal(document.getElementById('moveModal'));
+        $('#confirmMoveBtn').prop('disabled', false);
         moveModal.show();
         loadMoveFolder('');
     });
 
     $('#confirmMoveBtn').click(() => {
-        if (!moveSelectedFolder) {
-            alert('Please select a destination folder.');
+        const targetFolder = moveSelectedFolder || moveCurrentPath || '';
+
+        if (!selectedItems.length) {
+            alert('⚠️ No items selected to move.');
             return;
         }
 
         $.post('{{ route('bulk.import.move') }}', {
             _token: '{{ csrf_token() }}',
             items: selectedItems,
-            target: moveSelectedFolder
+            target: targetFolder
         }, (res) => {
             selectedItems.forEach(path => {
                 $(`[data-path="${path}"]`).closest('.col-6, .col-sm-4, .col-md-3, .col-lg-2')
                     .remove();
             });
+            if (currentFolder === targetFolder) {
+                res.movedItems.forEach(item => {
+                    $('#folderContents').append(`
+                <div class="col-6 col-sm-4 col-md-3 col-lg-2 text-center mb-4 image-item" data-path="${item.path}">
+                    <img src="${item.url}" alt="${item.name}" class="rounded mb-2"
+                        style="width:120px;height:120px;object-fit:contain;border:1px solid #e5e5e5;background:#fff;padding:4px;">
+                    <div class="small fw-semibold text-dark text-truncate w-100" title="${item.name}">${item.name}</div>
+                </div>
+            `);
+                });
+            }
             selectedItems = [];
             updateActionButtons();
             loadFolder($('#breadcrumbPath').data('path') || '');
 
             const moveModal = bootstrap.Modal.getInstance(document.getElementById('moveModal'));
             moveModal.hide();
-            console.log('Moved successfully:', res);
+
         }).fail(xhr => {
             console.error('Move failed:', xhr.responseText);
             alert('Failed to move items. Please try again.');
@@ -704,11 +820,7 @@
             alert('⚠️ Nothing to paste.');
             return;
         }
-
-        // 👇 Get the current folder path from the breadcrumb
         const currentFolder = $('#breadcrumbPath').attr('data-path') || '';
-
-        // Optional loader while copying
         const loader = $('#uploadLoader');
         const percentText = $('#uploadPercent');
         loader.removeClass('d-none');

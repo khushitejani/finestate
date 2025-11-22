@@ -99,6 +99,14 @@
             </li>
 
             <li class="nav-item">
+                <a class="nav-link" href="{{ route('business-shippings.index') }}" aria-expanded="false"
+                    aria-controls="business-shippings">
+                    <span class="menu-title">Business Shippings</span>
+                    <i class="icon-directions menu-icon"></i>
+                </a>
+            </li>
+
+            <li class="nav-item">
                 <a class="nav-link" href="{{ route('jewelleds.index') }}" aria-expanded="false"
                     aria-controls="jewels">
                     <span class="menu-title">Jewels</span>

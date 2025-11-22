@@ -13,12 +13,18 @@ class AircraftShopController extends Controller
         $shops = AircraftShop::all();
 
         $data = $shops->map(function ($shop) {
+
+            $images = $shop->images
+                ? array_map(function ($image) {
+                    return asset('storage/' . ltrim($image, '/'));
+                }, json_decode($shop->images))
+                : [asset('default_aircraft.jpg')];
             return [
                 'id' => $shop->id,
                 'name' => $shop->name,
                 'price' => $shop->price,
                 'description' => $shop->description,
-                'image' => $shop->image ? asset('storage/' . ltrim($shop->image, '/')) : null,
+                'images' => $images,
                 'created_at' => $shop->created_at ? $shop->created_at->toDateTimeString() : null,
                 'updated_at' => $shop->updated_at ? $shop->updated_at->toDateTimeString() : null,
             ];

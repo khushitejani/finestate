@@ -143,7 +143,7 @@
                 contentType: false,
                 success: function(res) {
                     if (res.success) {
-                        $('#commonmodal').modal('hide'); // Assuming you open the form in a modal
+                        $('#commonmodal').modal('hide'); 
                         toastr.success(res.message || 'Painting saved successfully');
                         loadPaintingsTable();
                     } else {
@@ -163,17 +163,14 @@
             });
         });
 
-        // Variables for delete painting
         let deletePaintingId = null;
 
-        // Open confirm modal on delete button click
         $(document).on('click', '.delete-painting', function() {
             deletePaintingId = $(this).data('id');
             $('#confirmDeleteMessage').html('<p>Are you sure you want to delete this painting?</p>');
             $('#confirmDeleteModal').modal('show');
         });
 
-        // Confirm delete painting AJAX request
         $('#confirmDeleteBtn').on('click', function() {
             if (deletePaintingId) {
                 $.ajax({

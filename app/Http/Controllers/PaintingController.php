@@ -25,7 +25,6 @@ class PaintingController extends Controller
         return view('paintings.create');
     }
 
-
     /**
      * Store a newly created resource in storage.
      */
@@ -35,7 +34,7 @@ class PaintingController extends Controller
             'name' => 'required|string|max:255',
             'years' => 'required|string|max:20',
             'price' => 'required|numeric',
-            'image' => 'required|image|mimes:jpeg,jpg,png,gif|max:2048',
+            'image' => 'required|image|mimes:jpeg,jpg,png,gif|max:51200',
         ]);
 
         $fileName = null;
@@ -86,7 +85,7 @@ class PaintingController extends Controller
             'name'  => 'required|string|max:255',
             'years' => 'required|string|max:20',
             'price' => 'required|numeric',
-            'image' => 'nullable|image|mimes:jpeg,jpg,png,gif|max:2048',
+            'image' => 'nullable|image|mimes:jpeg,jpg,png,gif|max:51200',
         ]);
 
         // If new image file uploaded, delete old image and save new one

@@ -123,7 +123,6 @@
         </div>
     </div> --}}
 
-
     <script src="assets/vendors/js/vendor.bundle.base.js"></script>
     <script src="assets/vendors/chart.js/chart.umd.js"></script>
     <script src="assets/vendors/jvectormap/jquery-jvectormap.min.js"></script>
@@ -437,6 +436,44 @@
             });
         });
 
+        function initDropZone() {
+            const dropZone = document.getElementById('dropZone');
+            const fileInput = document.getElementById('fileInput');
+            const uploadedList = document.getElementById('uploadedList');
+
+            if (!dropZone || !fileInput || !uploadedList) return;
+            dropZone.replaceWith(dropZone.cloneNode(true));
+            fileInput.replaceWith(fileInput.cloneNode(true));
+
+            const newDropZone = document.getElementById('dropZone');
+            const newFileInput = document.getElementById('fileInput');
+
+            newDropZone.onclick = () => newFileInput.click();
+            newFileInput.name = "import_file";
+
+
+
+            newDropZone.ondragover = e => {
+                e.preventDefault();
+                newDropZone.style.backgroundColor = '#e9f7ef';
+            };
+
+            newDropZone.ondragleave = () => {
+                newDropZone.style.backgroundColor = '#f9fafb';
+            };
+
+            newDropZone.ondrop = e => {
+                e.preventDefault();
+                newDropZone.style.backgroundColor = '#f9fafb';
+                handleFiles(e.dataTransfer.files);
+                newFileInput.value = '';
+            };
+
+            newFileInput.onchange = e => {
+                handleFiles(e.target.files);
+                e.target.value = '';
+            };
+        }
         $(document).on('click', '.open-import-modal', function(e) {
             e.preventDefault();
             const title = $(this).data('title') || 'Form';
@@ -451,10 +488,16 @@
                 modalDialog.addClass('modal-xl');
                 var myModal = new bootstrap.Modal(document.getElementById('commonmodal'));
                 myModal.show();
-                $('#commonmodal').on('hidden.bs.modal', function() {
-                    modalDialog.removeClass('modal-xl');
-                    initDropzone();
-                    initFolderExplorer();
+                setTimeout(() => {
+                    initDropZone();
+                }, 10);
+                // $('#commonmodal').on('hidden.bs.modal', function() {
+                //     modalDialog.removeClass('modal-xl');
+                // });
+                $('#commonmodal').on('hidden.bs.modal.bulkImport', function() {
+                    if ($(this).find('#bulkImportForm').length) {
+                        modalDialog.removeClass('modal-xl');
+                    }
                 });
             });
         });
@@ -464,7 +507,9 @@
             let form = $(this);
             let url = form.attr('action');
             let formData = new FormData(this);
+            formData.append('import_file', droppedFile);
 
+            console.log(formData);
             $.ajax({
                 url: url,
                 method: 'POST',
@@ -505,7 +550,7 @@
                     message.removeClass('text-success').addClass('text-danger');
 
                     video.load();
-                    video.loop = false; 
+                    video.loop = false;
                     video.currentTime = 0;
 
                     var resultModal = new bootstrap.Modal(document.getElementById('resultModal'));
@@ -522,6 +567,8 @@
             });
         });
     </script>
+
+
 </body>
 
 </html>

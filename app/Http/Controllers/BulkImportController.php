@@ -57,7 +57,6 @@ class BulkImportController extends Controller
             return response()->json(['error' => 'No files found'], 400);
         }
 
-        // Determine root folder name from first file path
         $firstPath = $paths[0] ?? $files[0]->getClientOriginalName();
         $rootFolderName = explode('/', trim($firstPath, '/'))[0] ?? 'newfolder';
 
@@ -178,35 +177,43 @@ class BulkImportController extends Controller
     {
         $items = $request->input('items', []);
         $target = trim($request->input('target', ''), '/');
-        Log::info('Move request received.', compact('items', 'target'));
-
         if (empty($items)) {
             return response()->json(['error' => 'No items selected to move'], 400);
         }
 
         foreach ($items as $item) {
             $source = trim($item, '/');
-            $destination = $target ? $target . '/' . basename($source) : basename($source);
+            $sourcePath = Storage::disk('public')->path($source);
+            $basename = basename($source);
 
-            $destinationDir = dirname(Storage::disk('public')->path($destination));
+            $destination = $target ? $target . '/' . $basename : $basename;
+            $destinationPath = Storage::disk('public')->path($destination);
+
+            $destinationDir = dirname($destinationPath);
             if (!File::exists($destinationDir)) {
                 File::makeDirectory($destinationDir, 0755, true);
-                Log::info("Created destination directory: {$destinationDir}");
-            }
-            $baseName = basename($source);
-            $nameWithoutExt = pathinfo($baseName, PATHINFO_FILENAME);
-            $extension = pathinfo($baseName, PATHINFO_EXTENSION);
-
-            $finalDestination = $destination;
-            $counter = 1;
-            while (Storage::disk('public')->exists($finalDestination)) {
-                $newName = $nameWithoutExt . "($counter)" . ($extension ? ".{$extension}" : '');
-                $finalDestination = ($target ? $target . '/' : '') . $newName;
-                $counter++;
             }
 
-            Storage::disk('public')->move($source, $finalDestination);
-            Log::info("Moved: {$source} → {$finalDestination}");
+
+            if (is_dir($sourcePath)) {
+                $finalDestination = $destinationPath;
+                $counter = 1;
+                while (File::exists($finalDestination)) {
+                    $finalDestination = $destinationDir . '/' . $basename . "($counter)";
+                    $counter++;
+                }
+                File::moveDirectory($sourcePath, $finalDestination);
+            } else {
+                $nameWithoutExt = pathinfo($basename, PATHINFO_FILENAME);
+                $extension = pathinfo($basename, PATHINFO_EXTENSION);
+                $finalDestination = $destinationPath;
+                $counter = 1;
+                while (File::exists($finalDestination)) {
+                    $finalDestination = $destinationDir . '/' . $nameWithoutExt . "($counter)" . ($extension ? ".{$extension}" : '');
+                    $counter++;
+                }
+                File::move($sourcePath, $finalDestination);
+            }
         }
 
         return response()->json([
@@ -261,6 +268,50 @@ class BulkImportController extends Controller
     /**
      * Paste selected files or folders to the target folder.
      */
+    // public function paste(Request $request)
+    // {
+    //     $items = $request->input('items', []);
+    //     $targetFolder = trim($request->input('target', ''), '/');
+
+    //     foreach ($items as $itemPath) {
+    //         $source = trim($itemPath, '/');
+    //         $basename = basename($source);
+    //         $destination = $targetFolder ? $targetFolder . '/' . $basename : $basename;
+
+    //         if ($targetFolder === $source || str_starts_with($targetFolder, $source . '/')) {
+    //             continue;
+    //         }
+
+    //         $counter = 1;
+    //         $originalDestination = $destination;
+    //         while (Storage::disk('public')->exists($destination)) {
+    //             $fileBase = pathinfo($basename, PATHINFO_FILENAME);
+    //             $fileExt = pathinfo($basename, PATHINFO_EXTENSION);
+    //             $fileExt = $fileExt ? '.' . $fileExt : '';
+    //             $destination = $targetFolder
+    //                 ? $targetFolder . '/' . $fileBase . "($counter)" . $fileExt
+    //                 : $fileBase . "($counter)" . $fileExt;
+    //             $counter++;
+    //         }
+
+    //         if (Storage::disk('public')->exists($source)) {
+    //             if (is_dir(Storage::disk('public')->path($source))) {
+    //                 File::copyDirectory(
+    //                     Storage::disk('public')->path($source),
+    //                     Storage::disk('public')->path($destination)
+    //                 );
+    //             } else {
+    //                 File::copy(
+    //                     Storage::disk('public')->path($source),
+    //                     Storage::disk('public')->path($destination)
+    //                 );
+    //             }
+    //         }
+    //     }
+
+    //     return response()->json(['success' => true]);
+    // }
+
     public function paste(Request $request)
     {
         $items = $request->input('items', []);
@@ -274,7 +325,6 @@ class BulkImportController extends Controller
             if ($targetFolder === $source || str_starts_with($targetFolder, $source . '/')) {
                 continue;
             }
-
             $counter = 1;
             $originalDestination = $destination;
             while (Storage::disk('public')->exists($destination)) {
@@ -287,24 +337,18 @@ class BulkImportController extends Controller
                 $counter++;
             }
 
-            if (Storage::disk('public')->exists($source)) {
-                if (is_dir(Storage::disk('public')->path($source))) {
-                    File::copyDirectory(
-                        Storage::disk('public')->path($source),
-                        Storage::disk('public')->path($destination)
-                    );
-                } else {
-                    File::copy(
-                        Storage::disk('public')->path($source),
-                        Storage::disk('public')->path($destination)
-                    );
-                }
+            $fullSource = Storage::disk('public')->path($source);
+            $fullDestination = Storage::disk('public')->path($destination);
+
+            if (is_dir($fullSource)) {
+                File::copyDirectory($fullSource, $fullDestination);
+            } elseif (file_exists($fullSource)) {
+                File::copy($fullSource, $fullDestination);
             }
         }
 
         return response()->json(['success' => true]);
     }
-
     public function createFolder(Request $request)
     {
         $currentFolder = trim($request->input('folder', ''), '/');
@@ -326,9 +370,7 @@ class BulkImportController extends Controller
             $newFolderPath = $originalPath . "($counter)";
             $counter++;
         }
-
         Storage::disk('public')->makeDirectory($newFolderPath, 0755, true);
-
         return response()->json([
             'success' => true,
             'folder' => $newFolderPath,

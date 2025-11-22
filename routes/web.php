@@ -21,6 +21,7 @@ use App\Http\Controllers\CryptocurrencyController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\InsightController;
 use App\Http\Controllers\BulkImportController;
+use App\Http\Controllers\BusinessShippingController;
 use App\Http\Controllers\BusinessTaxiController;
 
 Route::get('/', function () {
@@ -132,6 +133,11 @@ Route::middleware('auth:admin')->group(function () {
     Route::post('/bulk/rename', [BulkImportController::class, 'rename'])->name('bulk.import.rename');
     Route::post('/bulk-import/paste', [BulkImportController::class, 'paste'])->name('bulk.import.paste');
     Route::post('/bulk-import/create-folder', [BulkImportController::class, 'createFolder'])->name('bulk.import.createFolder');
+
+    // business-shippings
+    Route::resource('business-shippings', BusinessShippingController::class);
+    Route::post('/business-shippings/bulk-import', [BusinessShippingController::class, 'bulkImport'])->name('business-shippings.bulk.import');
+    Route::get('/business-shippings/demo-download', [BusinessShippingController::class, 'downloadDemo'])->name('business-shippings.demo.download');
 
     // Route::get('/demo', [ShareController::class, 'intradayChart']);
     // Route::get('/chart', function () {

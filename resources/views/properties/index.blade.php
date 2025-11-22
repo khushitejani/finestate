@@ -43,14 +43,13 @@
                                                         : [];
                                                     $firstImage = count($images) ? $images[0] : null;
                                                     $imagePath =
-                                                        $firstImage &&  
+                                                        $firstImage &&
                                                         file_exists(public_path('storage/' . $firstImage))
                                                             ? asset('storage/' . $firstImage)
                                                             : asset('default.jpeg');
                                                 @endphp
 
-                                                <img src="{{ $imagePath }}" alt="Property image"
-                                                    class="rounded"
+                                                <img src="{{ $imagePath }}" alt="Property image" class="rounded"
                                                     style="width:50px; height:50px; object-fit:cover; border:1px solid #ddd; background-color:#fff; padding:2px;">
                                             </td>
 
@@ -91,10 +90,14 @@
     <script>
         function initPropertyImagePreview(container) {
             const form = container.querySelector('#propertyForm');
-            if (!form || form.dataset.previewInit === "true") return;
+            // if (!form || form.dataset.previewInit === "true") return;
+            if (window.previewInit) return;
+            window.previewInit = true;
             form.dataset.previewInit = "true";
 
-            const input = form.querySelector('#propertyImages');
+            // const input = form.querySelector('#propertyImages');
+            const input = form.querySelector('#imageInput');
+
             const preview = form.querySelector('#imagePreview');
             if (!input || !preview) return;
 

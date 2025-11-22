@@ -21,10 +21,28 @@
             value="{{ old('price') }}">
     </div>
 
-    <div class="mb-3">
+    {{-- <div class="mb-3">
         <label for="image" class="form-label">Painting Image</label>
         <input type="file" class="form-control" id="image" name="image" required>
-    </div>
+    </div> --}}
 
+
+    <div class="mb-3">
+        <label class="form-label fw-bold d-block">Painting Image</label>
+
+        <div class="ciu-box mx-auto position-relative" id="imageBox"
+            style="width:100%; max-width:500px; min-height:200px; cursor:pointer;
+                   display:flex; align-items:center; justify-content:center;
+                   background:#f9f9f9; border:2px dashed #ccc; border-radius:12px; overflow:hidden;">
+            <img id="imagePreview" class="ciu-preview" alt="Preview"
+                style="display:none; width:auto; height:auto; max-width:100%; max-height:500px;">
+            <span class="ciu-placeholder" style="font-size:2rem; color:#888;">+ Image</span>
+        </div>
+
+        <input type="file" name="image" id="imageInput" class="d-none" accept="image/*">
+        @error('image')
+            <small class="text-danger">{{ $message }}</small>
+        @enderror
+    </div>
     <button type="submit" class="btn btn-success mt-3">Save Painting</button>
 </form>

@@ -151,7 +151,9 @@ class CoinController extends Controller
             $coinData = [
                 'name'  => $rowData['name'] ?? null,
                 'years' => $rowData['years'] ?? null,
-                'price' => $rowData['price'] ?? null,
+                'price' => isset($rowData['price'])
+                    ? floatval(str_replace([',', '$'], '', $rowData['price']))
+                    : 0
             ];
             $fileName = null;
             $excelImage = $rowData['image_path'] ?? $rowData['image'] ?? null;
@@ -176,7 +178,7 @@ class CoinController extends Controller
     }
     public function downloadDemo()
     {
-        $filePath = public_path('assets/demo-files/coins.xlsx'); 
+        $filePath = public_path('assets/demo-files/coins.xlsx');
 
         if (file_exists($filePath)) {
             return response()->download($filePath, 'coins_demo.xlsx');

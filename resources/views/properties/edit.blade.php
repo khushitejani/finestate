@@ -7,7 +7,6 @@
         <label class="form-label fw-bold">Property Images</label>
 
         <div class="d-flex flex-column align-items-center">
-            <!-- Main Preview -->
             <div id="mainPreviewWrapper"
                 style="width:400px; height:300px; border:2px dashed #ccc; display:flex; align-items:center; justify-content:center; margin-bottom:10px; overflow:hidden; border-radius:12px;">
                 @php
@@ -15,22 +14,16 @@
                     $firstImage = $images[0] ?? null;
                 @endphp
                 @if ($firstImage)
-                    <img id="mainPreview" src="{{ asset('storage/' . $firstImage) }}"
+                    <img id="mainPreview" src="{{ asset('storage/' . ltrim($firstImage, '/')) }}"
                         style="width:100%; height:100%; object-fit:cover;">
                 @else
                     <span id="mainPlaceholder" style="font-size:2rem; color:#888;">+ Image</span>
                 @endif
             </div>
 
-            <!-- Hidden file input -->
             <input type="file" id="imageInput" name="property_images[]" multiple class="d-none" accept="image/*">
-
-            <!-- Thumbnails -->
             <div id="thumbnails" class="d-flex gap-2 flex-wrap" style="max-width:400px;"></div>
-
             <button type="button" class="btn btn-outline-primary mt-2" id="addImagesBtn">Add Images</button>
-
-            <!-- Hidden input for old images -->
             <input type="hidden" name="property_images_json" id="propertyImagesJson" value="{{ $property->image }}">
         </div>
     </div>
@@ -53,6 +46,11 @@
     </div>
 
     <button type="submit" class="btn btn-primary">Update Property</button>
+    <style>
+        .thumbnail {
+            display: block !important;
+        }
+    </style>
 </form>
 
 <script>
