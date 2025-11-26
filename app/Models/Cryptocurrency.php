@@ -4,13 +4,14 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Carbon\Carbon;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Cryptocurrency extends Model
 {
-    use HasFactory;
+    use HasFactory, SoftDeletes;
 
     protected $fillable = [
+        'no',
         'name',
         'symbol',
         'image',
@@ -22,4 +23,5 @@ class Cryptocurrency extends Model
     protected $casts = [
         'day_prices' => 'array',
     ];
+    protected $dates = ['deleted_at'];
 }

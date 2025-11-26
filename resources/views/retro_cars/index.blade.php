@@ -26,6 +26,7 @@
                                 <thead>
                                     <tr>
                                         <th class="font-weight-bold" style="width:90px;">Image</th>
+                                        <th class="font-weight-bold">No</th>
                                         <th class="font-weight-bold">Name</th>
                                         <th class="font-weight-bold">Years</th>
                                         <th class="font-weight-bold">Price</th>
@@ -50,6 +51,7 @@
                                                 <img src="{{ $imageUrl }}" alt="{{ $car->name }}" class="rounded"
                                                     style="width:50px; height:50px; object-fit:contain; border:1px solid #ddd; background:#fff; padding:2px;">
                                             </td>
+                                            <td>{{ $car->no ?? 'N/A'}}</td>
                                             <td>{{ $car->name }}</td>
                                             <td>{{ $car->years }}</td>
                                             <td>{{ number_format($car->price, 2) }}</td>

@@ -25,6 +25,17 @@
             value="{{ old('name', $insight->name) }}" required>
     </div>
 
+    <div class="mb-3">
+        <label class="form-label">No</label>
+        <div class="input-group">
+            <input type="number" id="noInput" name="no" class="form-control" value="{{ $insight->no }}"
+                required>
+
+            <button type="button" class="btn btn-info btn-sm generate-number-btn" data-table="Insight">
+                Generate Number
+            </button>
+        </div>
+    </div>
     <!-- Years -->
     <div class="mb-3">
         <label for="years" class="form-label">Years</label>

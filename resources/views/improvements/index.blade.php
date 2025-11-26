@@ -29,6 +29,7 @@
                                 <thead>
                                     <tr>
                                         <th>Image</th>
+                                        <th>No</th>
                                         <th>Name</th>
                                         <th>Price</th>
                                         <th class="text-center">Actions</th>
@@ -55,6 +56,7 @@
                                                     class="rounded"
                                                     style="width: 50px; height: 50px; object-fit: contain; border: 1px solid #ddd; background-color: #fff; padding: 2px;">
                                             </td>
+                                            <td>{{ $improvement->no ?? 'N/A' }}</td>
                                             <td>{{ $improvement->name }}</td>
                                             <td>${{ number_format($improvement->price, 2) }}</td>
                                             <td class="text-center">
@@ -101,9 +103,10 @@
                         <tr id="card-row-${improvement.id}">
                             <td>
                                 ${improvement.image_url ? `<img src="${improvement.image_url}" alt="image"
-                                                            style="width: 60px; height: 60px; object-fit: cover; border-radius: 6px;">`
+                                                                        style="width: 60px; height: 60px; object-fit: cover; border-radius: 6px;">`
                                     : '<span class="text-muted">No image</span>'}
                             </td>
+                            <td>${improvement.no ?? 'N/A'}</td>
                             <td>${improvement.name}</td>
                             <td>$${Number(improvement.price).toFixed(2)}</td>
                             <td class="text-center">

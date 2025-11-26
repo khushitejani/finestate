@@ -3,10 +3,14 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class BusinessShipping extends Model
 {
+    use HasFactory, SoftDeletes;
     protected $fillable = [
+        'no',
         'name',
         'category',
         'price',
@@ -14,4 +18,5 @@ class BusinessShipping extends Model
         'image',
         'resource'
     ];
+    protected $dates = ['deleted_at'];
 }

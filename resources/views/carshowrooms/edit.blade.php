@@ -33,9 +33,20 @@
 
     <div class="mb-3">
         <label class="form-label fw-bold">Name</label>
-        <input type="text" name="name" class="form-control" value="{{ old('name', $carshowroom->name) }}" required>
+        <input type="text" name="name" class="form-control" value="{{ old('name', $carshowroom->name) }}"
+            required>
     </div>
+    <div class="mb-3">
+        <label class="form-label">No</label>
+        <div class="input-group">
+            <input type="number" id="noInput" name="no" class="form-control" value="{{ $carshowroom->no }}"
+                required>
 
+            <button type="button" class="btn btn-info btn-sm generate-number-btn" data-table="CarShowroom">
+                Generate Number
+            </button>
+        </div>
+    </div>
     <div class="mb-3">
         <label class="form-label fw-bold">Price</label>
         <input type="number" step="0.01" name="price" class="form-control"
@@ -45,12 +56,12 @@
     <button type="submit" class="btn btn-primary">Update Car Showroom</button>
 </form>
 <script>
-    $(document).off('click', '#addImagesBtn').on('click', '#addImagesBtn', function (e) {
+    $(document).off('click', '#addImagesBtn').on('click', '#addImagesBtn', function(e) {
         e.preventDefault();
         $('#carImages').trigger('click');
     });
 
-    $(document).ready(function () {
+    $(document).ready(function() {
         let filesArray = [];
         const input = $('#carImages');
         const preview = $('#imagePreview');
@@ -61,9 +72,12 @@
         input.off('change');
 
         // Load existing images
-        $('#imagePreview .existing-img').each(function () {
+        $('#imagePreview .existing-img').each(function() {
             const imgSrc = $(this).attr('src');
-            filesArray.push({ existing: true, src: imgSrc });
+            filesArray.push({
+                existing: true,
+                src: imgSrc
+            });
         });
 
         function updateMainPreview() {
@@ -72,7 +86,8 @@
                     `<img id="mainPreview" src="${filesArray[0].src}" style="width:100%; height:100%; object-fit:cover;">`
                 );
             } else {
-                mainWrapper.html('<span id="mainPlaceholder" style="font-size:2rem; color:#888;">+ Image</span>');
+                mainWrapper.html(
+                    '<span id="mainPlaceholder" style="font-size:2rem; color:#888;">+ Image</span>');
             }
         }
 
@@ -93,12 +108,20 @@
         function addImageElement(fileObj, src, existing) {
             const wrapper = $('<div>')
                 .addClass('position-relative me-2 mb-2')
-                .css({ width: '100px', height: '80px' });
+                .css({
+                    width: '100px',
+                    height: '80px'
+                });
 
             const img = $('<img>')
                 .attr('src', src)
                 .addClass('rounded border thumbnail')
-                .css({ width: '100%', height: '100%', objectFit: 'cover', cursor: 'pointer' });
+                .css({
+                    width: '100%',
+                    height: '100%',
+                    objectFit: 'cover',
+                    cursor: 'pointer'
+                });
 
             const removeBtn = $('<button>')
                 .attr('type', 'button')
@@ -114,17 +137,18 @@
                 );
             });
 
-            removeBtn.on('click', function () {
+            removeBtn.on('click', function() {
                 filesArray = filesArray.filter(f => f !== fileObj);
                 renderPreviews();
             });
         }
 
         // Handle file input change (once)
-        input.on('change', function () {
+        input.on('change', function() {
             const newFiles = Array.from(this.files);
             newFiles.forEach(file => {
-                if (!filesArray.some(f => !f.existing && f.name === file.name && f.size === file.size)) {
+                if (!filesArray.some(f => !f.existing && f.name === file.name && f.size === file
+                        .size)) {
                     filesArray.push(file);
                 }
             });
@@ -133,7 +157,7 @@
         });
 
         // Form submit logic
-        form.on('submit', function () {
+        form.on('submit', function() {
             const keptExisting = filesArray
                 .filter(f => f.existing)
                 .map(f => f.src.replace('{{ asset('storage/') }}/', ''));

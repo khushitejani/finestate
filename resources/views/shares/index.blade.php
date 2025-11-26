@@ -27,6 +27,7 @@
                                 <thead>
                                     <tr>
                                         <th style="width:90px;">Image</th>
+                                        <th>No</th>
                                         <th>Name</th>
                                         <th>Share Price</th>
                                         <th>Dividend</th>
@@ -48,6 +49,7 @@
                                                 <img src="{{ $imageUrl }}" alt="{{ $share->name }}" class="rounded"
                                                     style="width: 50px; height: 50px; object-fit: contain; border: 1px solid #ddd; background-color: #fff; padding: 2px;">
                                             </td>
+                                            <td>{{ $share->no ?? 'N/A' }}</td>
                                             <td>{{ $share->name }}</td>
                                             <td>{{ number_format($share->share_price, 2) }}</td>
                                             <td>{{ $share->dividend }}</td>

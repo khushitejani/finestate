@@ -28,6 +28,7 @@
                                 <thead>
                                     <tr>
                                         <th style="width:90px;">Image</th>
+                                        <th>No</th>
                                         <th>Name</th>
                                         <th class="font-weight-bold">Years</th>
                                         <th>Price</th>
@@ -54,6 +55,7 @@
                                                 <img src="{{ $imageUrl }}" alt="{{ $stamp->name }}" class="rounded"
                                                     style="width:70px; height:40px; object-fit:cover; border:1px solid #ddd; background-color:#fff; padding:2px;">
                                             </td>
+                                            <td>{{ $stamp->no ?? 'N/A' }}</td>
                                             <td>{{ $stamp->name }}</td>
                                             <td>{{ $stamp->years ?? '—' }}</td>
                                             <td>{{ number_format($stamp->price, 2) }}</td>

@@ -24,13 +24,14 @@ class StampController extends Controller
     public function store(Request $request)
     {
         $request->validate([
+            'no'    => 'nullable|numeric',
             'name'  => 'required|string|max:255',
             'years' => 'required|string|max:20',
             'price' => 'required|numeric|min:0',
             'image' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
         ]);
 
-        $data = $request->only('name', 'price', 'years');
+        $data = $request->only('no', 'name', 'price', 'years');
 
         if ($request->hasFile('image')) {
             $data['image'] = $request->file('image')->store('stamps', 'public');
@@ -52,13 +53,14 @@ class StampController extends Controller
     public function update(Request $request, Stamp $stamp)
     {
         $request->validate([
+            'no'    => 'nullable|numeric',
             'name'  => 'required|string|max:255',
             'price' => 'required|numeric|min:0',
             'years' => 'required|string|max:20',
             'image' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
         ]);
 
-        $data = $request->only('name', 'price', 'years');
+        $data = $request->only('no', 'name', 'price', 'years');
 
         if ($request->hasFile('image')) {
             if ($stamp->image) {
@@ -77,9 +79,9 @@ class StampController extends Controller
 
     public function destroy(Stamp $stamp)
     {
-        if ($stamp->image) {
-            Storage::disk('public')->delete($stamp->image);
-        }
+        // if ($stamp->image) {
+        //     Storage::disk('public')->delete($stamp->image);
+        // }
         $stamp->delete();
 
         return response()->json([
@@ -120,18 +122,20 @@ class StampController extends Controller
             $rowData = array_combine($headers, $row);
 
             $coinData = [
+                'no'    => $rowData['no_'] ?? null,
                 'name'  => $rowData['name'] ?? null,
                 'price' => $rowData['price'] ?? null,
                 'years' => $rowData['years'] ?? null
             ];
             $fileName = null;
-            $excelImage = $rowData['image_path'] ?? $rowData['image'] ?? null;
+            $excelImage = $rowData['link'] ?? $rowData['image'] ?? null;
             if ($excelImage) {
                 $fileName = 'stamps/' . ltrim($excelImage, '/');
             } else {
                 $fileName = 'default.jpeg';
             }
             Stamp::create([
+                'no'    => $coinData['no'],
                 'name'  => $coinData['name'],
                 'price' => $coinData['price'],
                 'years'  => $coinData['years'],

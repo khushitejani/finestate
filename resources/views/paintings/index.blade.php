@@ -29,6 +29,7 @@
                                 <thead>
                                     <tr>
                                         <th class="font-weight-bold" style="width:90px;">Image</th>
+                                        <th class="font-weight-bold">No</th>
                                         <th class="font-weight-bold">Name</th>
                                         <th class="font-weight-bold">Years</th>
                                         <th class="font-weight-bold">Price</th>
@@ -56,6 +57,7 @@
                                                 <img src="{{ $imageUrl }}" alt="{{ $painting->name }}" class="rounded"
                                                     style="width:50px; height:50px; object-fit:contain; border:1px solid #ddd; background-color:#fff; padding:2px;">
                                             </td>
+                                            <td>{{ $painting->no ?? 'N/A' }}</td>
                                             <td>{{ $painting->name }}</td>
                                             <td>{{ $painting->years ?? '—' }}</td>
                                             <td>{{ number_format($painting->price, 2) }}</td>
@@ -143,7 +145,7 @@
                 contentType: false,
                 success: function(res) {
                     if (res.success) {
-                        $('#commonmodal').modal('hide'); 
+                        $('#commonmodal').modal('hide');
                         toastr.success(res.message || 'Painting saved successfully');
                         loadPaintingsTable();
                     } else {

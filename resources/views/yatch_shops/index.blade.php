@@ -27,6 +27,7 @@
                                 <thead>
                                     <tr>
                                         <th style="width:90px;">Image</th>
+                                        <th>No</th>
                                         <th>Name</th>
                                         <th>Price</th>
                                         <th>Description</th>
@@ -56,6 +57,7 @@
                                                 <img src="{{ $imageUrl }}" alt="{{ $yatch->name }}" class="rounded"
                                                     style="width:50px; height:50px; object-fit:cover; border:1px solid #ddd; background-color:#fff; padding:2px;">
                                             </td>
+                                            <td>{{ $yatch->no ?? 'N/A'}}</td>
                                             <td>{{ $yatch->name }}</td>
                                             <td>{{ number_format($yatch->price, 2) }}</td>
                                             <td>{{ \Illuminate\Support\Str::limit($yatch->description, 50) }}</td>

@@ -19,6 +19,7 @@
                             <thead>
                                 <tr>
                                     <th style="width:90px;">Image</th>
+                                    <th>No</th>
                                     <th>Name</th>
                                     <th>Price (ETH)</th>
                                     <th>Description</th>
@@ -37,6 +38,7 @@
                                                 <span class="text-muted">No image</span>
                                             @endif
                                         </td>
+                                         <td>{{ $nft->no ?? 'N/A' }}</td>
                                         <td>{{ $nft->name }}</td>
                                         <td>{{ number_format($nft->price, 2) }}</td>
                                         <td>{{ $nft->description }}</td>

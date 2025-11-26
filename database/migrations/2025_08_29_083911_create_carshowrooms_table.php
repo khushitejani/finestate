@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('carshowrooms', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->decimal('price', 10, 2);
+            $table->decimal('price', 15, 2);
             $table->json('images')->nullable();
             $table->timestamps();
         });

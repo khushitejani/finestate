@@ -22,6 +22,7 @@ class IslandController extends Controller
     public function store(Request $request)
     {
         $data = $request->validate([
+            'no' => 'nullable|numeric',
             'name' => 'required|string|max:255',
             'price' => 'required|numeric',
             'description' => 'nullable|string',
@@ -49,6 +50,7 @@ class IslandController extends Controller
     public function update(Request $request, Island $island)
     {
         $data = $request->validate([
+            'no' => 'nullable|numeric',
             'name' => 'required|string|max:255',
             'price' => 'required|numeric',
             'description' => 'nullable|string',
@@ -73,9 +75,9 @@ class IslandController extends Controller
 
     public function destroy(Island $island)
     {
-        if ($island->image) {
-            Storage::disk('public')->delete($island->image);
-        }
+        // if ($island->image) {
+        //     Storage::disk('public')->delete($island->image);
+        // }
         $island->delete();
 
         return response()->json([
@@ -117,10 +119,11 @@ class IslandController extends Controller
                 $rowData = array_combine($headers, $row);
 
                 $name = $rowData['game_name'] ?? $rowData['name'] ?? 'Unknown';
+                $no          = $rowData['no_'] ?? ' ';
                 $description = $rowData['location'] ?? null;
                 $price = isset($rowData['price']) ? floatval(str_replace(['$', ',', '₹'], '', $rowData['price'])) : 0;
 
-                $excelImage = $rowData['image_path'] ?? $rowData['image'] ?? null;
+                $excelImage = $rowData['link'] ?? $rowData['link'] ?? null;
                 if ($excelImage) {
                     $storedImagePath = 'islands/' . ltrim($excelImage, '/');
                 } else {
@@ -130,6 +133,7 @@ class IslandController extends Controller
                 Island::create([
                     'name' => $name,
                     'price' => $price,
+                    'no'          => $no,
                     'description' => $description,
                     'image' => $storedImagePath,
                 ]);

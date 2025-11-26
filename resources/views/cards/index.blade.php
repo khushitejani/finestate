@@ -26,6 +26,7 @@
                                 <thead>
                                     <tr>
                                         <th style="width:90px;">Image</th>
+                                        <th>No</th>
                                         <th>Name</th>
                                         <th>Price</th>
                                         <th class="text-end" style="width:220px;">Actions</th>
@@ -51,6 +52,7 @@
                                                 <img src="{{ $imageUrl }}" alt="{{ $card->name }}" class="rounded"
                                                     style="width:70px;height:40px; object-fit: contain; border: 1px solid #ddd; background-color: #fff; padding: 2px;">
                                             </td>
+                                            <td>{{ $card->no ?? 'N/A' }}</td>
                                             <td>{{ $card->name }}</td>
                                             <td>{{ $card->sign_price }} {{ number_format($card->price, 2) }}</td>
                                             <td class="text-end">

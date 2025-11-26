@@ -23,6 +23,17 @@
     </div>
 
     <div class="mb-3">
+        <label class="form-label">No</label>
+        <div class="input-group">
+            <input type="number" id="noInput" name="no" class="form-control" placeholder="Enter or Generate"
+                required>
+            <button type="button" class="btn btn-info btn-sm generate-number-btn" data-table="Cryptocurrency">
+                Generate Number
+            </button>
+        </div>
+    </div>
+
+    <div class="mb-3">
         <label class="form-label" for="price">Price (ETH)</label>
         <input type="number" name="price" id="price" step="0.0001" class="form-control"
             value="{{ old('price') }}" required>

@@ -32,6 +32,7 @@ class CarshowroomController extends Controller
     public function store(Request $request)
     {
         $request->validate([
+            'no'            => 'nullable|numeric',
             'name'          => 'required|string|max:255',
             'price'         => 'required|numeric',
             'images'        => 'required|array',
@@ -49,9 +50,10 @@ class CarshowroomController extends Controller
         }
 
         $carshowroom = new Carshowroom();
+        $carshowroom->no     = $request->no;
         $carshowroom->name  = $request->name;
         $carshowroom->price = $request->price;
-        $carshowroom->images = $uploadedImages;
+        $carshowroom->images = json_encode($uploadedImages, JSON_UNESCAPED_SLASHES);
         $carshowroom->save();
 
         return response()->json([
@@ -82,6 +84,7 @@ class CarshowroomController extends Controller
         $carshowroom = Carshowroom::findOrFail($id);
 
         $request->validate([
+            'no'              => 'nullable|numeric',
             'name' => 'required|string|max:255',
             'price' => 'required|numeric',
             'images.*' => 'nullable|image|mimes:jpg,jpeg,png,gif,webp|max:20480',
@@ -90,11 +93,8 @@ class CarshowroomController extends Controller
 
         $carshowroom->name = $request->name;
         $carshowroom->price = $request->price;
-
-        // Decode kept existing images
+        $carshowroom->no    = $request->no; 
         $existingImages = $request->existing_images ? json_decode($request->existing_images, true) : [];
-
-        // Handle new uploads
         $uploadedImages = [];
         if ($request->hasFile('images')) {
             foreach ($request->file('images') as $file) {
@@ -103,12 +103,8 @@ class CarshowroomController extends Controller
                 $uploadedImages[] = $path;
             }
         }
-
-        // Merge kept images + new uploads
         $carshowroom->images = json_encode(array_merge($existingImages, $uploadedImages));
-
         $carshowroom->save();
-
         return response()->json([
             'success' => true,
             'message' => 'Car Showroom updated successfully with multiple images.'
@@ -130,9 +126,9 @@ class CarshowroomController extends Controller
             ], 404);
         }
 
-        if ($carshowroom->image && Storage::disk('public')->exists($carshowroom->image)) {
-            Storage::disk('public')->delete($carshowroom->image);
-        }
+        // if ($carshowroom->image && Storage::disk('public')->exists($carshowroom->image)) {
+        //     Storage::disk('public')->delete($carshowroom->image);
+        // }
         $carshowroom->delete();
 
         return response()->json([
@@ -163,10 +159,10 @@ class CarshowroomController extends Controller
             foreach ($rows as $index => $row) {
                 $rowData = @array_combine($headers, $row);
                 if (!$rowData) continue;
-
+                $no        = $rowData['no_'] ?? ' ';
                 $name      = $rowData['game_name_'] ?? $rowData['game_name'] ?? null;
                 $priceStr  = $rowData['game_price__in___'] ?? $rowData['game_price_in_'] ?? $rowData['price'] ?? null;
-                $imagesStr = $rowData['image_path'] ?? '';
+                $imagesStr = $rowData['link'] ?? '';
 
                 if (empty($name) || empty($priceStr)) continue;
 
@@ -176,6 +172,7 @@ class CarshowroomController extends Controller
 
                 Carshowroom::create([
                     'name'   => $name,
+                    'no'     => $no,
                     'price'  => $price,
                     'images' => json_encode($images, JSON_UNESCAPED_SLASHES),
                 ]);

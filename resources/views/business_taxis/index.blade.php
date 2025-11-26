@@ -28,6 +28,7 @@
                                 <thead>
                                     <tr>
                                         <th style="width:80px;">Image</th>
+                                        <th>No</th>
                                         <th>Name</th>
                                         <th>Resource</th>
                                         <th>Class</th>
@@ -48,11 +49,12 @@
                                                 <img src="{{ $imageUrl }}" alt="{{ $taxi->name }}" class="rounded"
                                                     style="width:50px; height:50px; object-fit:contain; border:1px solid #ddd;">
                                             </td>
+                                            <td>{{ $taxi->no ?? 'N/A' }}</td>
                                             <td>{{ $taxi->name }}</td>
                                             <td>{{ $taxi->resource }}</td>
                                             <td>{{ $taxi->class ?? '-' }}</td>
                                             <td>{{ number_format($taxi->income_per_hour, 2) }}</td>
-                                            <td>{{ number_format($taxi->price, 2) }}</td>
+                                            <td>{{ number_forma t($taxi->price, 2) }}</td>
                                             <td class="text-end">
                                                 <a href="{{ route('business-taxis.edit', $taxi->id) }}"
                                                     class="btn btn-sm btn-outline-primary open-card-modal"

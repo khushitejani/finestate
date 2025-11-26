@@ -1,7 +1,7 @@
 <form action="{{ route('cards.store') }}" method="POST" enctype="multipart/form-data" id="cardForm">
     @csrf
 
-       <div id="card-image-uploader-modal">
+    <div id="card-image-uploader-modal">
         <label class="form-label fw-bold d-block">Card Image</label>
 
         <div class="ciu-box mx-auto position-relative"
@@ -21,6 +21,17 @@
     </div>
 
     <div class="mb-3">
+        <label class="form-label">No</label>
+        <div class="input-group">
+            <input type="number" id="noInput" name="no" class="form-control" placeholder="Enter or Generate"
+                required>
+            <button type="button" class="btn btn-info btn-sm generate-number-btn" data-table="cards">
+                Generate Number
+            </button>
+        </div>
+    </div>
+
+    <div class="mb-3">
         <label class="form-label">Price</label>
         <input type="number" name="price" step="0.01" class="form-control" value="{{ old('price') }}" required>
     </div>
@@ -32,3 +43,5 @@
 
     <button type="submit" class="btn btn-success">Save Card</button>
 </form>
+
+

@@ -32,13 +32,14 @@ class NFTController extends Controller
     public function store(Request $request)
     {
         $request->validate([
+            'no' => 'nullable|numeric',
             'name' => 'required|string|max:255',
             'price' => 'required|numeric',
             'description' => 'nullable|string',
             'image' => 'nullable|image|mimes:jpg,jpeg,png,gif|max:2048',
         ]);
 
-        $data = $request->only(['name', 'price', 'description']);
+        $data = $request->only(['no', 'name', 'price', 'description']);
 
         if ($request->hasFile('image')) {
             $data['image'] = $request->file('image')->store('nfts', 'public');
@@ -77,6 +78,7 @@ class NFTController extends Controller
     public function update(Request $request, NFT $nft)
     {
         $request->validate([
+            'no' => 'nullable|numeric',
             'name' => 'required|string|max:255',
             'price' => 'required|numeric',
             'description' => 'nullable|string',
@@ -89,7 +91,7 @@ class NFTController extends Controller
             }
             $nft->image = $request->file('image')->store('nfts', 'public');
         }
-
+        $nft->no = $request->no;
         $nft->name = $request->name;
         $nft->price = $request->price;
         $nft->description = $request->description;
@@ -108,9 +110,9 @@ class NFTController extends Controller
      */
     public function destroy(NFT $nft)
     {
-        if ($nft->image && \Storage::disk('public')->exists($nft->image)) {
-            \Storage::disk('public')->delete($nft->image);
-        }
+        // if ($nft->image && Storage::disk('public')->exists($nft->image)) {
+        //     Storage::disk('public')->delete($nft->image);
+        // }
 
         $nft->delete();
 

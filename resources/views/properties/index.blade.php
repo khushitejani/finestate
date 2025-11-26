@@ -27,6 +27,7 @@
                                 <thead>
                                     <tr>
                                         <th>Image</th>
+                                        <th>No</th>
                                         <th>Location</th>
                                         <th>Price</th>
                                         <th>Income Per Hour</th>
@@ -46,13 +47,13 @@
                                                         $firstImage &&
                                                         file_exists(public_path('storage/' . $firstImage))
                                                             ? asset('storage/' . $firstImage)
-                                                            : asset('default.jpeg');
+                                                            : asset('default.png');
                                                 @endphp
 
                                                 <img src="{{ $imagePath }}" alt="Property image" class="rounded"
                                                     style="width:50px; height:50px; object-fit:cover; border:1px solid #ddd; background-color:#fff; padding:2px;">
                                             </td>
-
+                                            <td>{{ $property->no ?? 'N/A' }}</td>
                                             <td>{{ $property->address }}</td>
                                             <td>${{ number_format($property->price, 2) }}</td>
                                             <td>${{ number_format($property->income_per_hour, 2) }}</td>
@@ -66,6 +67,7 @@
                                                     data-id="{{ $property->id }}">
                                                     Delete
                                                 </button>
+
                                             </td>
                                         </tr>
                                     @empty
@@ -90,14 +92,10 @@
     <script>
         function initPropertyImagePreview(container) {
             const form = container.querySelector('#propertyForm');
-            // if (!form || form.dataset.previewInit === "true") return;
-            if (window.previewInit) return;
-            window.previewInit = true;
+            if (!form || form.dataset.previewInit === "true") return;
             form.dataset.previewInit = "true";
 
-            // const input = form.querySelector('#propertyImages');
-            const input = form.querySelector('#imageInput');
-
+            const input = form.querySelector('#propertyImages');
             const preview = form.querySelector('#imagePreview');
             if (!input || !preview) return;
 
@@ -159,6 +157,40 @@
         $(document).on('shown.bs.modal', '#commonmodal', function() {
             const container = this.querySelector('.modal-body');
             initPropertyImagePreview(container);
+        });
+
+        let deletePropertyId = null;
+
+        $(document).on('click', '.delete-properties', function() {
+            deletePropertyId = $(this).data('id');
+            $('#confirmDeleteMessage').html('<p>Are you sure you want to delete this property?</p>');
+            $('#confirmDeleteModal').modal('show');
+        });
+
+        $('#confirmDeleteBtn').on('click', function() {
+            if (deletePropertyId) {
+                $.ajax({
+                    url: '/properties/' + deletePropertyId,
+                    type: 'POST',
+                    data: {
+                        _method: 'DELETE',
+                        _token: $('meta[name="csrf-token"]').attr('content')
+                    },
+                    success: function(res) {
+                        if (res.success) {
+                            $('#confirmDeleteModal').modal('hide');
+                            $('#property-row-' + deletePropertyId).remove();
+                            toastr.success(res.message || 'Property deleted successfully.');
+                        } else {
+                            toastr.error(res.message || 'Something went wrong.');
+                        }
+                    },
+                    error: function() {
+                        $('#confirmDeleteModal').modal('hide');
+                        toastr.error('Failed to delete property.');
+                    }
+                });
+            }
         });
     </script>
 @endpush

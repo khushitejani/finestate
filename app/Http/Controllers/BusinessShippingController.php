@@ -33,6 +33,7 @@ class BusinessShippingController extends Controller
     public function store(Request $request)
     {
         $request->validate([
+            'no' => 'nullable|numeric',
             'name' => 'required|string|max:255',
             'category' => 'required|in:City,State,Long-distance',
             'image' => 'nullable|image|max:2048',
@@ -43,6 +44,7 @@ class BusinessShippingController extends Controller
 
         $shipping = new BusinessShipping();
         $shipping->name = $request->name;
+        $shipping->no = $request->no;
         $shipping->category = $request->category;
         $shipping->resource = $request->resource;
         $shipping->income_per_hour = $request->income_per_hour;
@@ -84,6 +86,7 @@ class BusinessShippingController extends Controller
 
         $request->validate([
             'name' => 'required|string|max:255',
+            'no' => 'nullable|numeric',
             'category' => 'required|in:City,State,Long-distance',
             'image' => 'nullable|image|max:2048',
             'resource' => 'nullable|string',
@@ -92,15 +95,16 @@ class BusinessShippingController extends Controller
         ]);
 
         $shipping->name = $request->name;
+        $shipping->no = $request->no;
         $shipping->category = $request->category;
         $shipping->resource = $request->resource;
         $shipping->income_per_hour = $request->income_per_hour;
         $shipping->price = $request->price;
 
         if ($request->hasFile('image')) {
-            if ($shipping->image) {
-                Storage::disk('public')->delete($shipping->image);
-            }
+            // if ($shipping->image) {
+            //     Storage::disk('public')->delete($shipping->image);
+            // }
             $shipping->image = $request->file('image')->store('business_shippings', 'public');
         }
 
@@ -154,22 +158,19 @@ class BusinessShippingController extends Controller
 
             foreach ($rows as $row) {
                 if (count(array_filter($row)) === 0) continue;
-
                 $rowData = array_combine($headers, $row);
-                Log::info([$rowData]);
-
                 $shipping = new BusinessShipping();
                 $shipping->name = $rowData['game_name'] ?? 'Unknown';
                 $shipping->category = $rowData['class'] ?? 'City';
                 $shipping->resource = $rowData['total_km'] ?? '';
+                $shipping->no = isset($rowData['no_']) ? intval($rowData['no_']) : null;
                 $shipping->income_per_hour = isset($rowData['total_km___income_per_hour']) ? floatval($rowData['total_km___income_per_hour']) : 0;
                 $shipping->price = isset($rowData['price'])
                     ? floatval(str_replace(['$', ','], '', $rowData['price']))
                     : 0;
-
-                if (!empty($rowData['image'])) {
-                    $imageName = trim($rowData['image']); 
-                    $shipping->image = 'business_shippings/' . $imageName; 
+                if (!empty($rowData['link'])) {
+                    $imageName = trim($rowData['link']);
+                    $shipping->image = 'business_shippings/' . $imageName;
                 } else {
                     $shipping->image = null;
                 }

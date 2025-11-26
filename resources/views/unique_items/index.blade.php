@@ -28,6 +28,7 @@
                                 <thead>
                                     <tr>
                                         <th style="width:90px;">Image</th>
+                                        <th>No</th>
                                         <th>Name</th>
                                         <th class="font-weight-bold">Years</th>
                                         <th>Price</th>
@@ -55,6 +56,7 @@
                                                     alt="{{ $unique_item->name ?? 'Unique Item' }}" class="rounded"
                                                     style="width:50px; height:50px; object-fit:contain; border:1px solid #ddd; background:#fff; padding:2px;">
                                             </td>
+                                            <td>{{ $unique_item->no ?? 'N/A'}}</td>
                                             <td>{{ $unique_item->name }}</td>
                                             <td>{{ $unique_item->years ?? '—' }}</td>
                                             <td>{{ number_format($unique_item->price, 2) }}</td>
@@ -108,7 +110,7 @@
                     if (res.success) {
                         $('#commonmodal').modal('hide'); // close modal
                         toastr.success(res.message || 'Unique Item saved successfully');
-                        loadYatchTable(); // reload table
+                        loadUniqueItemTable(); // reload table
                     } else {
                         toastr.error(res.message || 'Something went wrong');
                     }
@@ -165,7 +167,7 @@
                     if (res.success) {
                         toastr.success(res.message);
                         loadUniqueItemTable();
-                        deleteUniqueItemId = null; // reset variable
+                        deleteUniqueItemId = null; 
                     } else {
                         toastr.error(res.message);
                     }

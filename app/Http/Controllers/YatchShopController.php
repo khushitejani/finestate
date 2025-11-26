@@ -23,6 +23,7 @@ class YatchShopController extends Controller
     public function store(Request $request)
     {
         $request->validate([
+            'no'          => 'nullable|numeric',
             'name'        => 'required|string|max:255',
             'description' => 'nullable|string',
             'price'       => 'required|numeric|min:0',
@@ -35,6 +36,7 @@ class YatchShopController extends Controller
         }
 
         YatchShop::create([
+            'no'          => $request->no,
             'name'        => $request->name,
             'description' => $request->description,
             'price'       => $request->price,
@@ -59,6 +61,7 @@ class YatchShopController extends Controller
     public function update(Request $request, YatchShop $yatchshop)
     {
         $request->validate([
+            'no'          => 'nullable|numeric',
             'name'        => 'required|string|max:255',
             'description' => 'nullable|string',
             'price'       => 'required|numeric|min:0',
@@ -72,6 +75,7 @@ class YatchShopController extends Controller
         }
 
         $yatchshop->update([
+            'no'          => $request->no,
             'name'        => $request->name,
             'description' => $request->description,
             'price'       => $request->price,
@@ -146,12 +150,12 @@ class YatchShopController extends Controller
 
                 $rowData = @array_combine($headers, $row);
                 if (!$rowData) continue;
-
+                $no    = $rowData['no_'] ?? null;
                 $name = $rowData['game_name_'] ?? 'Unknown';
                 $price = isset($rowData['game_price_in_'])
                     ? floatval(str_replace(['$', ',', '₹'], '', $rowData['game_price_in_']))
                     : 0;
-                $excelImage = $rowData['image_path'] ?? null;
+                $excelImage = $rowData['link'] ?? null;
                 if ($excelImage) {
                     $storedImagePath = 'yatch_shops/' . ltrim($excelImage, '/');
                 } else {
@@ -159,6 +163,7 @@ class YatchShopController extends Controller
                 }
 
                 YatchShop::create([
+                    'no'          => $no,
                     'name'        => $name,
                     'price'       => $price,
                     'image'       => json_encode([$storedImagePath]),

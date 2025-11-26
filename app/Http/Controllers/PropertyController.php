@@ -8,6 +8,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 
+use Illuminate\Support\Facades\Log;
+
 
 class PropertyController extends Controller
 {
@@ -46,35 +48,38 @@ class PropertyController extends Controller
     /**
      * Store a newly created resource in storage.
      */
+    // public function store(Request $request)
     public function store(Request $request)
     {
         $request->validate([
-            'property_images'   => 'required|array|min:1',
-            'property_images.*' => 'image|mimes:jpeg,png,jpg,gif|max:2048',
-            'income_per_hour'   => 'required|numeric|min:0',
-            'address'           => 'required|string',
-            'price'             => 'required|numeric|min:0',
+            'no' => 'nullable|numeric',
+            'income_per_hour' => 'required|numeric',
+            'price' => 'required|numeric',
+            'address' => 'required|string',
+            'property_images.*' => 'image|mimes:jpeg,png,jpg,gif,svg|max:20480',
         ]);
 
-        $images = [];
+        $imagePaths = [];
 
         if ($request->hasFile('property_images')) {
-            foreach ($request->file('property_images') as $image) {
-                $path = $image->store('properties', 'public');
-                $images[] = $path;
+            foreach ($request->file('property_images') as $file) {
+                $path = $file->store('properties', 'public'); 
+                $imagePaths[] = $path;
             }
         }
 
-        $property = new Property();
-        $property->income_per_hour = $request->income_per_hour;
-        $property->address = $request->address;
-        $property->price = $request->price;
-        $property->image = json_encode($images);
-        $property->save();
+        $property = Property::create([
+            'no' => $request->no,
+            'income_per_hour' => $request->income_per_hour,
+            'price' => $request->price,
+            'address' => $request->address,
+            'image' => json_encode($imagePaths),
+        ]);
 
-        return redirect()->route('properties.index')
-            ->with('success', 'Property added successfully!');
+        return redirect()->route('properties.index')->with('success', 'Property created successfully');
     }
+
+
     /**
      * Show the form for editing the specified resource.
      */
@@ -88,33 +93,29 @@ class PropertyController extends Controller
     public function update(Request $request, Property $property)
     {
         $request->validate([
+            'no' => 'nullable|numeric',
             'income_per_hour' => 'required|numeric|min:0',
             'address' => 'required|string|max:500',
             'price' => 'required|numeric|min:0',
             'property_images_json' => 'nullable|string',
             'property_images.*' => 'image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
-
+        $property->no = $request->no;
         $property->income_per_hour = $request->income_per_hour;
         $property->address = $request->address;
         $property->price = $request->price;
 
-        $imagesArray = $request->input('property_images_json')
-            ? json_decode($request->input('property_images_json'), true)
-            : [];
+        $images = $request->input('property_images_json') ? json_decode($request->input('property_images_json'), true) : [];
 
         if ($request->hasFile('property_images')) {
             foreach ($request->file('property_images') as $file) {
                 $path = $file->store('properties', 'public');
-                $imagesArray[] = $path;
+                $images[] = $path;
             }
         }
-
-        $property->image = json_encode($imagesArray);
+        $property->image = json_encode($images);
         $property->save();
-
-        return redirect()->route('properties.index')
-            ->with('success', 'Property updated successfully!');
+        return redirect()->route('properties.index')->with('success', 'Property updated successfully!');
     }
 
     /**
@@ -123,17 +124,17 @@ class PropertyController extends Controller
     public function destroy(Property $property)
     {
         try {
-            if ($property->image && Storage::disk('public')->exists($property->image)) {
-                Storage::disk('public')->delete($property->image);
-            }
+            // if ($property->image && Storage::disk('public')->exists($property->image)) {
+            //     Storage::disk('public')->delete($property->image);
+            // }
             $property->delete();
             return response()->json([
-                'ok' => true,
+                'success' => true,
                 'message' => 'Property deleted successfully.',
             ]);
         } catch (\Exception $e) {
             return response()->json([
-                'ok' => false,
+                'success' => false,
                 'message' => 'Failed to delete property.',
             ], 500);
         }
@@ -170,22 +171,21 @@ class PropertyController extends Controller
 
             foreach ($rows as $row) {
                 $rowData = array_combine($headers, $row);
-
+                $no = $rowData['no'] ?? ' ';
                 $address = $rowData['location'] ?? 'Unknown';
                 $price = isset($rowData['purchase_price']) ? floatval(str_replace(['$', ','], '', $rowData['purchase_price'])) : 0;
                 $incomePerHour = isset($rowData['income_per_hour']) ? floatval(str_replace(['$', ','], '', $rowData['income_per_hour'])) : 0;
-                $imagesArray = array_map('trim', explode(',', $rowData['image_path'] ?? ''));
+                $imagesArray = array_map('trim', explode(',', $rowData['link'] ?? ''));
                 $imagesArray = array_map(fn($img) => 'properties/' . ltrim(str_replace('\\', '/', $img), '/'), $imagesArray);
                 Property::create([
+                    'no' => $no,
                     'address' => $address,
                     'price' => $price,
                     'income_per_hour' => $incomePerHour,
                     'image' => json_encode($imagesArray, JSON_UNESCAPED_SLASHES),
                 ]);
-
                 $importedCount++;
             }
-
             return response()->json([
                 'success' => true,
                 'imported_count' => $importedCount

@@ -25,6 +25,18 @@
     </div>
 
     <div class="mb-3">
+        <label class="form-label">No</label>
+        <div class="input-group">
+            <input type="number" id="noInput" name="no" class="form-control" value="{{ $nft->no }}"
+                required>
+
+            <button type="button" class="btn btn-info btn-sm generate-number-btn" data-table="NFT">
+                Generate Number
+            </button>
+        </div>
+    </div>
+
+    <div class="mb-3">
         <label for="price" class="form-label">Price (ETH)</label>
         <input type="number" step="0.01" name="price" id="price" class="form-control"
             value="{{ old('price', $nft->price) }}" required>

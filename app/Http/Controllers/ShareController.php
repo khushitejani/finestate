@@ -32,6 +32,7 @@ class ShareController extends Controller
     {
         try {
             $request->validate([
+                'no' => 'nullable|numeric',
                 'name' => 'required|string|max:255',
                 'share_price' => 'required|numeric',
                 'dividend' => 'required|numeric',
@@ -52,6 +53,7 @@ class ShareController extends Controller
                 $dayPrices = array_map('floatval', explode(',', $request->day_prices_input));
             }
             $share = Share::create([
+                'no' => $request->input('no'),
                 'name' => $request->input('name'),
                 'share_price' => $request->input('share_price'),
                 'dividend' => $request->input('dividend'),
@@ -101,6 +103,7 @@ class ShareController extends Controller
         try {
             $share = Share::findOrFail($id);
             $request->validate([
+                'no' => 'nullable|numeric',
                 'name' => 'required|string|max:255',
                 'share_price' => 'required|numeric',
                 'dividend' => 'required|numeric',
@@ -112,6 +115,7 @@ class ShareController extends Controller
             ]);
 
             $data = $request->only([
+                'no',
                 'name',
                 'share_price',
                 'dividend',
@@ -166,9 +170,9 @@ class ShareController extends Controller
         }
 
 
-        if ($share->image && Storage::disk('public')->exists($share->image)) {
-            Storage::disk('public')->delete($share->image);
-        }
+        // if ($share->image && Storage::disk('public')->exists($share->image)) {
+        //     Storage::disk('public')->delete($share->image);
+        // }
 
         $share->delete();
 
@@ -202,7 +206,7 @@ class ShareController extends Controller
             // Normalize headers
             $rawHeaders = array_shift($rows);
             $headers = array_map(function ($h) {
-                return strtolower(trim(str_replace(' ', '_', $h)));
+                return strtolower(trim(str_replace([' ', '.', '-'], '_', $h)));
             }, $rawHeaders);
 
             $importedCount = 0;
@@ -210,26 +214,25 @@ class ShareController extends Controller
             foreach ($rows as $row) {
                 $rowData = array_combine($headers, $row);
 
+                $no = $rowData['no'] ?? null;
                 $name = $rowData['game_name'] ?? $rowData['name'] ?? 'Unknown';
                 $price = isset($rowData['price_in_$']) ? floatval(str_replace(['$', ','], '', $rowData['price_in_$'])) : 0;
                 $dividend = isset($rowData['dividend_in_%']) ? floatval(str_replace(['%', ','], '', $rowData['dividend_in_%'])) / 100 : 0;
                 $capitalization = isset($rowData['company_capitalization']) ? floatval(str_replace(['$', ','], '', $rowData['company_capitalization'])) : 0;
                 $availableShares = isset($rowData['number_of_available_shares']) ? intval($rowData['number_of_available_shares']) : 0;
-                $logoPath = $rowData['logo_path'] ?? null;
-                if ($logoPath) {
-                    $storedImagePath = 'shares/' . $logoPath;
-                } else {
-                    $storedImagePath = 'default.jpeg';
-                }
+
+                $logoPath = $rowData['link'] ?? null;
+                $storedImagePath = $logoPath ? 'shares/' . ltrim($logoPath, '/') : 'default.jpeg';
 
                 Share::create([
-                    'name' => $name,
-                    'share_price' => $price,
-                    'dividend' => $dividend,
-                    'time_period' => 3,
-                    'capitalization' => $capitalization,
-                    'available_shares' => $availableShares,
-                    'image' => $storedImagePath,
+                    'no'                => $no,
+                    'name'              => $name,
+                    'share_price'       => $price,
+                    'dividend'          => $dividend,
+                    'time_period'       => 3,
+                    'capitalization'    => $capitalization,
+                    'available_shares'  => $availableShares,
+                    'image'             => $storedImagePath,
                 ]);
                 $importedCount++;
             }
@@ -246,6 +249,7 @@ class ShareController extends Controller
         }
     }
 
+
     public function downloadDemo()
     {
         $filePath = public_path('assets/demo-files/shares.xlsx');
@@ -256,5 +260,4 @@ class ShareController extends Controller
 
         abort(404, 'Demo Excel file not found.');
     }
-    
 }

@@ -2,7 +2,7 @@
     enctype="multipart/form-data">
     @csrf
     @method('PUT')
-     <div id="card-image-uploader-modal">
+    <div id="card-image-uploader-modal">
         <label class="form-label fw-bold d-block">Crypto Image</label>
 
         <div class="ciu-box mx-auto position-relative"
@@ -10,7 +10,8 @@
                 display:flex; align-items:center; justify-content:center;
                 background:#f9f9f9; border:2px dashed #ccc; border-radius:12px; overflow:hidden;">
 
-            <img id="imagePreview" src="{{ $cryptocurrency->image ? asset('storage/' . $cryptocurrency->image) : '' }}" alt="Preview"
+            <img id="imagePreview" src="{{ $cryptocurrency->image ? asset('storage/' . $cryptocurrency->image) : '' }}"
+                alt="Preview"
                 style="width:100%; height:100%; object-fit:cover; display:{{ $cryptocurrency->image ? 'block' : 'none' }};">
 
             <span class="ciu-placeholder"
@@ -26,6 +27,17 @@
             value="{{ old('name', $cryptocurrency->name) }}" required>
     </div>
 
+    <div class="mb-3">
+        <label class="form-label">No</label>
+        <div class="input-group">
+            <input type="number" id="noInput" name="no" class="form-control" value="{{ $cryptocurrency->no }}"
+                required>
+
+            <button type="button" class="btn btn-info btn-sm generate-number-btn" data-table="Cryptocurrency">
+                Generate Number
+            </button>
+        </div>
+    </div>
     <div class="mb-3">
         <label for="price" class="form-label">Price (ETH)</label>
         <input type="number" name="price" id="price" step="0.0001" class="form-control"
@@ -44,7 +56,7 @@
             class="form-control" value="{{ old('available_for_purchase', $cryptocurrency->available_for_purchase) }}">
     </div>
     <div class="mb-3">
-        <label class="form-label" for="day_prices_input" >Add Intraday Prices (comma-separated)</label>
+        <label class="form-label" for="day_prices_input">Add Intraday Prices (comma-separated)</label>
         <input type="text" name="day_prices_input"class="form-control"
             value="{{ old('day_prices_input', isset($cryptocurrency->day_prices['base']) ? implode(',', $cryptocurrency->day_prices['base']) : '') }}">
 

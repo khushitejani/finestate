@@ -22,6 +22,7 @@ class ImprovementController extends Controller
                 'improvements' => $improvements->map(function ($item) {
                     return [
                         'id' => $item->id,
+                        'no' => $item->no,
                         'name' => $item->name,
                         'price' => $item->price,
                         'image_url' => $item->image ? asset('storage/' . $item->image) : null,
@@ -48,6 +49,7 @@ class ImprovementController extends Controller
     public function store(Request $request)
     {
         $request->validate([
+            'no' => 'nullable|numeric',
             'image' => 'required|image|mimes:jpg,jpeg,png,gif|max:5120',
             'name' => 'required|string|max:255',
             'price' => 'required|numeric|min:0',
@@ -61,6 +63,7 @@ class ImprovementController extends Controller
             $fileName = $file->storeAs('improvements', $uniqueName, 'public');
         }
         $improvement = Improvement::create([
+            'no' => $request->no,
             'image' => $fileName,
             'name' => $request->name,
             'price' => $request->price,
@@ -98,11 +101,12 @@ class ImprovementController extends Controller
         $improvement = Improvement::findOrFail($id);
 
         $request->validate([
+            'no' => 'nullable|numeric',
             'name' => 'required|string|max:255',
             'price' => 'required|numeric|min:0',
             'image' => 'nullable|image|mimes:jpg,jpeg,png,gif|max:5120',
         ]);
-        $data = $request->only(['name', 'price']);
+        $data = $request->only(['no', 'name', 'price']);
 
         if ($request->hasFile('image')) {
             if ($improvement->image && Storage::disk('public')->exists($improvement->image)) {
@@ -130,9 +134,9 @@ class ImprovementController extends Controller
     {
         $improvement = Improvement::findOrFail($id);
 
-        if ($improvement->image && Storage::disk('public')->exists($improvement->image)) {
-            Storage::disk('public')->delete($improvement->image);
-        }
+        // if ($improvement->image && Storage::disk('public')->exists($improvement->image)) {
+        //     Storage::disk('public')->delete($improvement->image);
+        // }
         $improvement->delete();
 
         return response()->json([
@@ -174,7 +178,7 @@ class ImprovementController extends Controller
 
             $rowData = array_combine($headers, $row);
 
-            $excelImage = $rowData['image_path'] ?? $rowData['image'] ?? null;
+            $excelImage = $rowData['link'] ?? $rowData['link'] ?? null;
 
             if ($excelImage) {
                 $fileName = 'improvements/' . ltrim($excelImage, '/');
@@ -185,6 +189,7 @@ class ImprovementController extends Controller
             try {
                 Improvement::create([
                     'name'        => $rowData['name'] ?? 'Untitled',
+                    'no'          => $rowData['no_'] ?? ' ',
                     'price'       => $rowData['price'] ?? 0,
                     'image'       => $fileName,
                 ]);

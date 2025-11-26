@@ -566,8 +566,29 @@
 
             });
         });
-    </script>
+        $(document).on("click", ".generate-number-btn", function(e) {
+            e.preventDefault();
+            let button = $(this);
+            let table = button.data("table");
+            let input = $("#noInput"); 
 
+            $.ajax({
+                url: "/generate-number/" + table,
+                method: "GET",
+                success: function(res) {
+                    if (res.success) {
+                        input.val(res.number); 
+                        toastr.success("Number generated: " + res.number);
+                    } else {
+                        toastr.error("Failed to generate number");
+                    }
+                },
+                error: function() {
+                    toastr.error("Error generating number");
+                }
+            });
+        });
+    </script>
 
 </body>
 

@@ -19,6 +19,7 @@
                                     <thead>
                                         <tr>
                                             <th style="width:90px;">Image</th>
+                                            <th>No</th>
                                             <th>Name</th>
                                             <th>Price</th>
                                             <th>Market Cap</th>
@@ -37,6 +38,7 @@
                                                         <span class="text-muted">No image</span>
                                                     @endif
                                                 </td>
+                                                <td>{{ $crypto->no ?? 'N/A' }}</td>
                                                 <td>{{ $crypto->name }}</td>
                                                 <td>{{ number_format($crypto->price, 8) }}</td>
                                                 <td>{{ number_format($crypto->cryptocurrencies_cap, 2) }}</td>

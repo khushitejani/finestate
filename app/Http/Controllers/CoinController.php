@@ -32,6 +32,7 @@ class CoinController extends Controller
     public function store(Request $request)
     {
         $request->validate([
+            'no'             => 'nullable|numeric',
             'name'          => 'required|string|max:255',
             'years'         => 'required|string|max:50',
             'price'         => 'required|numeric',
@@ -47,7 +48,8 @@ class CoinController extends Controller
         }
 
         Coin::create([
-            'name' => $request->name,
+            'no'    => $request->no,
+            'name'  => $request->name,
             'years' => $request->years,
             'price' => $request->price,
             'image' => $fileName,
@@ -78,12 +80,14 @@ class CoinController extends Controller
     public function update(Request $request, Coin $coin)
     {
         $request->validate([
-            'name'          => 'required|string|max:255',
+            'no'    => 'nullable|numeric',
+            'name'  => 'required|string|max:255',
             'years' => 'required|string|max:50',
-            'price'         => 'required|numeric',
+            'price' => 'required|numeric',
             'image' => 'nullable|image|mimes:jpg,jpeg,png,gif,webp|max:5120',
         ]);
 
+        $coin->no    = $request->no;
         $coin->name = $request->name;
         $coin->years = $request->years;
         $coin->price = $request->price;
@@ -108,9 +112,9 @@ class CoinController extends Controller
     public function destroy(string $id)
     {
         $coin = Coin::findOrFail($id);
-        if ($coin->image && Storage::disk('public')->exists($coin->image)) {
-            Storage::disk('public')->delete($coin->image);
-        }
+        // if ($coin->image && Storage::disk('public')->exists($coin->image)) {
+        //     Storage::disk('public')->delete($coin->image);
+        // }
         $coin->delete();
         return response()->json([
             'success' => true,
@@ -150,13 +154,14 @@ class CoinController extends Controller
 
             $coinData = [
                 'name'  => $rowData['name'] ?? null,
+                'no'    => $rowData['no_'] ?? null,
                 'years' => $rowData['years'] ?? null,
                 'price' => isset($rowData['price'])
                     ? floatval(str_replace([',', '$'], '', $rowData['price']))
                     : 0
             ];
             $fileName = null;
-            $excelImage = $rowData['image_path'] ?? $rowData['image'] ?? null;
+            $excelImage = $rowData['link'] ?? $rowData['link'] ?? null;
             if ($excelImage) {
                 $fileName = 'coins/' . ltrim($excelImage, '/');
             } else {
@@ -164,6 +169,7 @@ class CoinController extends Controller
             }
             Coin::create([
                 'name'  => $coinData['name'],
+                'no'    => $coinData['no'],
                 'years' => $coinData['years'],
                 'price' => $coinData['price'],
                 'image' => $fileName,

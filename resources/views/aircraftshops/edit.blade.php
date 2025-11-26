@@ -40,6 +40,18 @@
         <input type="text" name="name" class="form-control" value="{{ old('name', $aircraftShop->name) }}"
             required>
     </div>
+    <!-- No Field -->
+    <div class="mb-3">
+        <label class="form-label">No</label>
+        <div class="input-group">
+            <input type="number" id="noInput" name="no" class="form-control" value="{{ $aircraftShop->no }}"
+                required>
+
+            <button type="button" class="btn btn-info btn-sm generate-number-btn" data-table="AircraftShop">
+                Generate Number
+            </button>
+        </div>
+    </div>
     <div class="mb-3">
         <label class="form-label fw-bold">Price</label>
         <input type="number" step="0.01" name="price" class="form-control"
@@ -74,7 +86,7 @@
             if (filesArray.length > 0) {
                 mainWrapper.html(
                     `<img id="mainPreview" src="${filesArray[0].src}" style="width:100%; height:100%; object-fit:cover;">`
-                    );
+                );
             } else {
                 mainWrapper.html(
                     '<span id="mainPlaceholder" style="font-size:2rem; color:#888;">+ Image</span>');
@@ -114,7 +126,7 @@
             img.on('click', () => {
                 mainWrapper.html(
                     `<img id="mainPreview" src="${src}" style="width:100%; height:100%; object-fit:cover;">`
-                    );
+                );
             });
 
             removeBtn.on('click', function() {

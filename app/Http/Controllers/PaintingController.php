@@ -31,7 +31,8 @@ class PaintingController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'name' => 'required|string|max:255',
+            'no'    => 'nullable|numeric',
+            'name'  => 'required|string|max:255',
             'years' => 'required|string|max:20',
             'price' => 'required|numeric',
             'image' => 'required|image|mimes:jpeg,jpg,png,gif|max:51200',
@@ -46,16 +47,15 @@ class PaintingController extends Controller
         }
 
         Painting::create([
-            'name' => $request->name,
-            'years'  => $request->years,
+            'no'    => $request->no,
+            'name'  => $request->name,
+            'years' => $request->years,
             'price' => $request->price,
             'image' => $fileName,
         ]);
 
         return response()->json(['success' => true, 'message' => 'Painting created successfully.']);
     }
-
-
 
     /**
      * Display the specified resource.
@@ -82,6 +82,7 @@ class PaintingController extends Controller
         $painting = Painting::findOrFail($id);
 
         $request->validate([
+            'no'    => 'nullable|numeric',
             'name'  => 'required|string|max:255',
             'years' => 'required|string|max:20',
             'price' => 'required|numeric',
@@ -99,7 +100,7 @@ class PaintingController extends Controller
             Storage::disk('public')->putFileAs('paintings', $file, basename($fileName));
             $painting->image = $fileName;
         }
-
+        $painting->no = $request->no;
         $painting->name = $request->name;
         $painting->years = $request->years;
         $painting->price = $request->price;
@@ -118,9 +119,9 @@ class PaintingController extends Controller
         $painting = Painting::findOrFail($id);
 
         // Delete image if exists
-        if ($painting->image && Storage::disk('public')->exists($painting->image)) {
-            Storage::disk('public')->delete($painting->image);
-        }
+        // if ($painting->image && Storage::disk('public')->exists($painting->image)) {
+        //     Storage::disk('public')->delete($painting->image);
+        // }
 
         $painting->delete();
 
@@ -159,18 +160,20 @@ class PaintingController extends Controller
             $rowData = array_combine($headers, $row);
 
             $coinData = [
+                'no'    => $rowData['no_'] ?? ' ',
                 'name'  => $rowData['name'] ?? null,
                 'years' => $rowData['years'] ?? null,
                 'price' => $rowData['price'] ?? null,
             ];
             $fileName = null;
-            $excelImage = $rowData['image_path'] ?? $rowData['image'] ?? null;
+            $excelImage = $rowData['link'] ?? $rowData['link'] ?? null;
             if ($excelImage) {
                 $fileName = 'paintings/' . ltrim($excelImage, '/');
             } else {
                 $fileName = 'default.jpeg';
             }
             Painting::create([
+                'no'    => $coinData['no'],
                 'name'  => $coinData['name'],
                 'years' => $coinData['years'],
                 'price' => $coinData['price'],

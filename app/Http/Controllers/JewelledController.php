@@ -23,12 +23,13 @@ class JewelledController extends Controller
     public function store(Request $request)
     {
         $request->validate([
+            'no'    => 'nullable|numeric',
             'name'  => 'required|string|max:255',
             'price' => 'required|numeric|min:0',
             'image' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
         ]);
 
-        $data = $request->only('name', 'price');
+        $data = $request->only('no','name', 'price');
 
         if ($request->hasFile('image')) {
             $data['image'] = $request->file('image')->store('jewelleds', 'public');
@@ -50,12 +51,13 @@ class JewelledController extends Controller
     public function update(Request $request, Jewelled $jewelled)
     {
         $request->validate([
+            'no'    => 'nullable|numeric',
             'name'  => 'required|string|max:255',
             'price' => 'required|numeric|min:0',
             'image' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
         ]);
 
-        $data = $request->only('name', 'price');
+        $data = $request->only('no', 'name', 'price');
 
         if ($request->hasFile('image')) {
             if ($jewelled->image) {
@@ -74,9 +76,9 @@ class JewelledController extends Controller
 
     public function destroy(Jewelled $jewelled)
     {
-        if ($jewelled->image) {
-            Storage::disk('public')->delete($jewelled->image);
-        }
+        // if ($jewelled->image) {
+        //     Storage::disk('public')->delete($jewelled->image);
+        // }
         $jewelled->delete();
 
         return response()->json(['success' => true, 'message' => 'Jewelled deleted successfully.']);
@@ -115,10 +117,11 @@ class JewelledController extends Controller
 
             $coinData = [
                 'name'  => $rowData['name'] ?? null,
+                'no'    => $rowData['no_'] ?? ' ',
                 'price' => $rowData['price'] ?? null,
             ];
             $fileName = null;
-            $excelImage = $rowData['image_path'] ?? $rowData['image'] ?? null;
+            $excelImage = $rowData['link'] ?? $rowData['link'] ?? null;
             if ($excelImage) {
                 $fileName = 'jewelleds/' . ltrim($excelImage, '/');
             } else {
@@ -126,6 +129,7 @@ class JewelledController extends Controller
             }
             Jewelled::create([
                 'name'  => $coinData['name'],
+                'no'    => $coinData['no'],
                 'price' => $coinData['price'],
                 'image' => $fileName,
             ]);

@@ -40,6 +40,7 @@ class BusinessTaxiController extends Controller
                 'resource' => 'nullable|string',
                 'income_per_hour' => 'nullable|numeric',
                 'price' => 'nullable|numeric',
+                'no' => 'nullable|numeric',
             ]);
 
             $fileName = null;
@@ -50,6 +51,7 @@ class BusinessTaxiController extends Controller
             }
 
             $taxi = BusinessTaxi::create([
+                'no' => $request->no,
                 'name' => $request->name,
                 'resource' => $request->resource,
                 'class' => $request->class,
@@ -99,6 +101,7 @@ class BusinessTaxiController extends Controller
 
             $request->validate([
                 'name' => 'required|string|max:255',
+                'no' => 'nullable|numeric',
                 'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:5120',
                 'class' => 'nullable|string|max:255',
                 'resource' => 'nullable|string',
@@ -106,7 +109,7 @@ class BusinessTaxiController extends Controller
                 'price' => 'nullable|numeric',
             ]);
 
-            $data = $request->only(['name', 'class', 'resource', 'income_per_hour', 'price']);
+            $data = $request->only(['name', 'class', 'no','resource', 'income_per_hour', 'price']);
 
             if ($request->hasFile('image')) {
                 if ($taxi->image && Storage::disk('public')->exists($taxi->image)) {
@@ -148,9 +151,9 @@ class BusinessTaxiController extends Controller
             ], 404);
         }
 
-        if ($taxi->image && Storage::disk('public')->exists($taxi->image)) {
-            Storage::disk('public')->delete($taxi->image);
-        }
+        // if ($taxi->image && Storage::disk('public')->exists($taxi->image)) {
+        //     Storage::disk('public')->delete($taxi->image);
+        // }
 
         $taxi->delete();
 
@@ -203,6 +206,7 @@ class BusinessTaxiController extends Controller
             }
             foreach ($grouped as $className => $classRows) {
                 foreach ($classRows as $rowData) {
+                    $no = isset($rowData['no_']) ? intval($rowData['no_']) : null;
                     $name = $rowData['game_name'] ?? $rowData['name'] ?? 'Unknown';
                     $resource = $rowData['total_km'] ?? 'Unknown';
                     $incomePerHour = isset($rowData['income_per_hour']) ? floatval($rowData['income_per_hour']) : 0;
@@ -210,12 +214,10 @@ class BusinessTaxiController extends Controller
                     if (isset($rowData['price_in__']) && !empty($rowData['price_in__'])) {
                         $price = floatval(str_replace([',', '$'], '', $rowData['price_in__']));
                     }
-
-
-                    $imagePath = $rowData['image_path'] ?? null;
+                    $imagePath = $rowData['link'] ?? null;
                     $storedImagePath = $imagePath ? 'business_taxis/' . $imagePath : 'default.jpeg';
-
                     BusinessTaxi::create([
+                        'no' => $className . '-' . $no,
                         'class' => $className,
                         'name' => $name,
                         'resource' => $resource,
@@ -248,5 +250,4 @@ class BusinessTaxiController extends Controller
         }
         abort(404, 'Demo Excel file not found.');
     }
- 
 }

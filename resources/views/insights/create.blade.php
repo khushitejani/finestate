@@ -21,7 +21,16 @@
         <label for="name" class="form-label">Name</label>
         <input type="text" name="name" id="name" class="form-control" required>
     </div>
-
+    <div class="mb-3">
+        <label class="form-label">No</label>
+        <div class="input-group">
+            <input type="number" id="noInput" name="no" class="form-control" placeholder="Enter or Generate"
+                required>
+            <button type="button" class="btn btn-info btn-sm generate-number-btn" data-table="Insight">
+                Generate Number
+            </button>
+        </div>
+    </div>
     <div class="mb-3">
         <label for="years" class="form-label">Years</label>
         <input type="text" name="years" id="years" class="form-control" placeholder="e.g. 1990–2020"

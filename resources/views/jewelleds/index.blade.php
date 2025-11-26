@@ -17,7 +17,7 @@
                                 <a class="btn btn-success btn-sm open-import-modal text-end" data-title="Jewels Bulk Import"
                                     data-form-url="{{ route('bulk.import.form') }}"
                                     data-form-submit="{{ route('jewelleds.bulk.import') }}"
-                                     data-form-demo-download="{{ route('jewelleds.demo.download') }}">
+                                    data-form-demo-download="{{ route('jewelleds.demo.download') }}">
                                     <i class="bi bi-cloud-arrow-up me-1"></i> Open Bulk Import
                                 </a>
                             </div>
@@ -28,6 +28,7 @@
                                 <thead>
                                     <tr>
                                         <th style="width:90px;">Image</th>
+                                        <th>No</th>
                                         <th>Name</th>
                                         <th>Price</th>
                                         <th class="text-end" style="width:220px;">Actions</th>
@@ -53,6 +54,7 @@
                                                 <img src="{{ $imageUrl }}" alt="{{ $jewel->name }}" class="rounded"
                                                     style="width:50px; height:50px; object-fit:cover; border:1px solid #ddd; background-color:#fff; padding:2px;">
                                             </td>
+                                            <td>{{ $jewel->no ?? 'N/A' }}</td>
                                             <td>{{ $jewel->name }}</td>
                                             <td>{{ number_format($jewel->price, 2) }}</td>
                                             <td class="text-end">

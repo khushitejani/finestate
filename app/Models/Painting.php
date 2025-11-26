@@ -4,9 +4,11 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Painting extends Model
 {
-    use HasFactory;
-    protected $fillable = ['name','years', 'price', 'image'];
+    use HasFactory, SoftDeletes;
+    protected $fillable = ['no', 'name', 'years', 'price', 'image'];
+    protected $dates = ['deleted_at'];
 }

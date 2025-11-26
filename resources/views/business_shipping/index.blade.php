@@ -28,6 +28,7 @@
                                 <thead>
                                     <tr>
                                         <th style="width:80px;">Image</th>
+                                        <th>No</th>
                                         <th>Name</th>
                                         <th>Category</th>
                                         <th>Resource</th>
@@ -48,6 +49,7 @@
                                                 <img src="{{ $imageUrl }}" alt="{{ $ship->name }}" class="rounded"
                                                     style="width:50px; height:50px; object-fit:contain; border:1px solid #ddd;">
                                             </td>
+                                            <td>{{ $ship->no ?? 'N/A' }}</td>
                                             <td>{{ $ship->name }}</td>
                                             <td>{{ $ship->category }}</td>
                                             <td>{{ $ship->resource }}</td>
@@ -65,7 +67,8 @@
                                         </tr>
                                     @empty
                                         <tr>
-                                            <td colspan="7" class="text-center text-muted py-4">No business shippings found.
+                                            <td colspan="7" class="text-center text-muted py-4">No business shippings
+                                                found.
                                             </td>
                                         </tr>
                                     @endforelse
@@ -89,7 +92,6 @@
     <script>
         $(document).ready(function() {
 
-            // Open modal for create/edit
             $(document).on('click', '.open-card-modal', function(e) {
                 e.preventDefault();
                 let url = $(this).attr('href');
@@ -112,7 +114,6 @@
                     }
                 });
             });
-
             $(document).on('submit', '#shippingForm', function(e) {
                 e.preventDefault();
                 let form = $(this);
@@ -148,7 +149,6 @@
                 });
             });
 
-            // Reload shippings table
             function reloadShippingsTable() {
                 $.ajax({
                     url: '{{ route('business-shippings.index') }}',
@@ -164,7 +164,6 @@
                 });
             }
 
-            // Delete shipping via AJAX
             let deleteShippingId = null;
             $(document).on('click', '.delete-shipping', function() {
                 deleteShippingId = $(this).data('id');

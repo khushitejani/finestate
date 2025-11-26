@@ -17,7 +17,7 @@
                                 <a class="btn btn-success btn-sm open-import-modal ms-3"
                                     data-title="Aircraft Shops Bulk Import" data-form-url="{{ route('bulk.import.form') }}"
                                     data-form-submit="{{ route('aircraftshops.bulkImport') }}"
-                                      data-form-demo-download="{{ route('aircraftshops.demo.download') }}">
+                                    data-form-demo-download="{{ route('aircraftshops.demo.download') }}">
                                     <i class="bi bi-cloud-arrow-up me-1"></i> Bulk Import
                                 </a>
 
@@ -28,6 +28,7 @@
                                 <thead>
                                     <tr>
                                         <th class="font-weight-bold" style="width:90px;">Image</th>
+                                        <th class="font-weight-bold">No</th>
                                         <th class="font-weight-bold">Name</th>
                                         <th class="font-weight-bold">Price</th>
                                         <th class="font-weight-bold">Description</th>
@@ -56,7 +57,7 @@
                                                 <img src="{{ $imageUrl }}" alt="{{ $aircraft->name }}" class="rounded"
                                                     style="width:50px; height:50px; object-fit:contain; border:1px solid #ddd; background-color:#fff; padding:2px;">
                                             </td>
-
+                                            <td>{{ $aircraft->no ?? 'N/A' }}</td>
                                             <td>{{ $aircraft->name }}</td>
                                             <td>{{ number_format($aircraft->price, 2) }}</td>
                                             <td>{{ \Illuminate\Support\Str::limit($aircraft->description, 50) }}</td>

@@ -37,10 +37,21 @@
             <small class="text-danger">{{ $message }}</small>
         @enderror
     </div>
+    <div class="mb-3">
+        <label class="form-label">No</label>
+        <div class="input-group">
+            <input type="number" id="noInput" name="no" class="form-control" value="{{ $coin->no }}"
+                required>
+
+            <button type="button" class="btn btn-info btn-sm generate-number-btn" data-table="Coin">
+                Generate Number
+            </button>
+        </div>
+    </div>
     {{-- Years --}}
     <div class="mb-3">
         <label class="form-label fw-bold">Years</label>
-        <input type="text" name="years" class="form-control" value="{{ old('years',$coin->years) }}"
+        <input type="text" name="years" class="form-control" value="{{ old('years', $coin->years) }}"
             placeholder="e.g. 1965–1999" required>
         @error('years')
             <small class="text-danger">{{ $message }}</small>

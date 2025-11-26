@@ -27,6 +27,18 @@
     </div>
 
     <div class="mb-3">
+        <label class="form-label">No</label>
+        <div class="input-group">
+            <input type="number" id="noInput" name="no" class="form-control" value="{{ $share->no }}"
+                required>
+
+            <button type="button" class="btn btn-info btn-sm generate-number-btn" data-table="shares">
+                Generate Number
+            </button>
+        </div>
+    </div>
+
+    <div class="mb-3">
         <label class="form-label">Share Price</label>
         <input type="number" name="share_price" step="0.01" class="form-control"
             value="{{ old('share_price', $share->share_price) }}" required>

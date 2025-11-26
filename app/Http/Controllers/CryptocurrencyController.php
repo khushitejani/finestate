@@ -24,6 +24,7 @@ class CryptocurrencyController extends Controller
     public function store(Request $request)
     {
         $request->validate([
+            'no' => 'nullable|numeric',
             'name' => 'required|string|max:255',
             'price' => 'required|numeric|min:0',
             'cryptocurrencies_cap' => 'nullable|numeric|min:0',
@@ -41,6 +42,7 @@ class CryptocurrencyController extends Controller
             $basePrices = array_map('floatval', explode(',', $request->day_prices_input));
         }
         Cryptocurrency::create([
+            'no' => $request->no,
             'name' => $request->name,
             'price' => $request->price,
             'cryptocurrencies_cap' => $request->cryptocurrencies_cap,
@@ -60,6 +62,7 @@ class CryptocurrencyController extends Controller
     public function update(Request $request, Cryptocurrency $crypto)
     {
         $request->validate([
+            'no' => 'nullable|numeric',
             'name' => 'required|string|max:255',
             'price' => 'required|numeric|min:0',
             'cryptocurrencies_cap' => 'nullable|numeric|min:0',
@@ -82,6 +85,7 @@ class CryptocurrencyController extends Controller
         }
 
         $crypto->update([
+            'no' => $request->no,
             'name' => $request->name,
             'price' => $request->price,
             'cryptocurrencies_cap' => $request->cryptocurrencies_cap,
@@ -98,9 +102,9 @@ class CryptocurrencyController extends Controller
 
     public function destroy(Cryptocurrency $crypto)
     {
-        if ($crypto->image) {
-            Storage::disk('public')->delete($crypto->image);
-        }
+        // if ($crypto->image) {
+        //     Storage::disk('public')->delete($crypto->image);
+        // }
 
         $crypto->delete();
 

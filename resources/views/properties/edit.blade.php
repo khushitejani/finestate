@@ -1,4 +1,4 @@
-<form action="{{ route('properties.update', $property->id) }}" method="POST" enctype="multipart/form-data"
+{{-- <form action="{{ route('properties.update', $property->id) }}" method="POST" enctype="multipart/form-data"
     id="propertyForm">
     @csrf
     @method('PUT')
@@ -7,6 +7,7 @@
         <label class="form-label fw-bold">Property Images</label>
 
         <div class="d-flex flex-column align-items-center">
+            <!-- Main Preview -->
             <div id="mainPreviewWrapper"
                 style="width:400px; height:300px; border:2px dashed #ccc; display:flex; align-items:center; justify-content:center; margin-bottom:10px; overflow:hidden; border-radius:12px;">
                 @php
@@ -14,16 +15,21 @@
                     $firstImage = $images[0] ?? null;
                 @endphp
                 @if ($firstImage)
-                    <img id="mainPreview" src="{{ asset('storage/' . ltrim($firstImage, '/')) }}"
+                    <img id="mainPreview" src="{{ asset('storage/' . $firstImage) }}"
                         style="width:100%; height:100%; object-fit:cover;">
                 @else
                     <span id="mainPlaceholder" style="font-size:2rem; color:#888;">+ Image</span>
                 @endif
             </div>
-
+            <!-- Hidden file input -->
             <input type="file" id="imageInput" name="property_images[]" multiple class="d-none" accept="image/*">
+
+            <!-- Thumbnails -->
             <div id="thumbnails" class="d-flex gap-2 flex-wrap" style="max-width:400px;"></div>
+
             <button type="button" class="btn btn-outline-primary mt-2" id="addImagesBtn">Add Images</button>
+
+            <!-- Hidden input for old images -->
             <input type="hidden" name="property_images_json" id="propertyImagesJson" value="{{ $property->image }}">
         </div>
     </div>
@@ -46,11 +52,6 @@
     </div>
 
     <button type="submit" class="btn btn-primary">Update Property</button>
-    <style>
-        .thumbnail {
-            display: block !important;
-        }
-    </style>
 </form>
 
 <script>
@@ -140,5 +141,167 @@
 
         console.log(imageInput.files);
     });
+    renderThumbnails();
+</script> --}}
+
+<form action="{{ route('properties.update', $property->id) }}" method="POST" enctype="multipart/form-data"
+    id="propertyForm">
+    @csrf
+    @method('PUT')
+
+    <div class="mb-3">
+        <label class="form-label fw-bold">Property Images</label>
+        <div class="d-flex flex-column align-items-center">
+
+            <!-- Main Preview -->
+            <div id="mainPreviewWrapper"
+                style="width:400px; height:300px; border:2px dashed #ccc; display:flex; align-items:center; justify-content:center; margin-bottom:10px; overflow:hidden; border-radius:12px;">
+                @php
+                    $images = $property->image ? json_decode($property->image, true) : [];
+                    $firstImage = $images[0] ?? null;
+                @endphp
+                @if ($firstImage)
+                    <img id="mainPreview" src="{{ asset('storage/' . $firstImage) }}"
+                        style="width:100%; height:100%; object-fit:cover;">
+                @else
+                    <span id="mainPlaceholder" style="font-size:2rem; color:#888;">+ Image</span>
+                @endif
+            </div>
+
+            <!-- File input for new images -->
+            <input type="file" id="imageInput" name="property_images[]" multiple class="d-none" accept="image/*">
+
+            <!-- Thumbnails container -->
+            <div id="thumbnails" class="d-flex gap-2 flex-wrap" style="max-width:400px;"></div>
+
+            <!-- Add Images Button -->
+            <button type="button" class="btn btn-outline-primary mt-2" id="addImagesBtn">Add Images</button>
+
+            <!-- Hidden input for old images JSON -->
+            <input type="hidden" name="property_images_json" id="propertyImagesJson" value="{{ $property->image }}">
+        </div>
+    </div>
+
+    <div class="mb-3 mt-3">
+        <label class="form-label fw-bold">Income Per Hour</label>
+        <input type="number" name="income_per_hour" class="form-control" step="0.01" min="0"
+            value="{{ old('income_per_hour', $property->income_per_hour) }}" required>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label fw-bold">Address</label>
+        <textarea name="address" class="form-control" rows="2" required>{{ old('address', $property->address) }}</textarea>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">No</label>
+        <div class="input-group">
+            <input type="number" id="noInput" name="no" class="form-control" value="{{ $property->no }}"
+                required>
+
+            <button type="button" class="btn btn-info btn-sm generate-number-btn" data-table="Property">
+                Generate Number
+            </button>
+        </div>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label fw-bold">Price</label>
+        <input type="number" name="price" step="0.01" class="form-control"
+            value="{{ old('price', $property->price) }}" required>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Update Property</button>
+</form>
+
+<script>
+    const mainWrapper = document.getElementById('mainPreviewWrapper');
+    const thumbnails = document.getElementById('thumbnails');
+    const imageInput = document.getElementById('imageInput');
+    const addImagesBtn = document.getElementById('addImagesBtn');
+    const propertyImagesJson = document.getElementById('propertyImagesJson');
+
+    // Arrays to track old and new images
+    let oldImages = propertyImagesJson.value ? JSON.parse(propertyImagesJson.value) : [];
+    let newFiles = [];
+
+    // Render thumbnails
+    function renderThumbnails() {
+        thumbnails.innerHTML = '';
+
+        // Render old images
+        oldImages.forEach((path, idx) => {
+            const wrapper = document.createElement('div');
+            wrapper.classList.add('thumbnail-wrapper', 'position-relative');
+            wrapper.dataset.index = idx;
+            wrapper.dataset.type = 'old';
+            wrapper.innerHTML = `
+                <img src="/storage/${path}" class="thumbnail rounded border" style="width:80px; height:60px; object-fit:cover; cursor:pointer;">
+                <button type="button" class="btn btn-sm btn-danger position-absolute top-0 end-0 remove-thumb">×</button>
+            `;
+            thumbnails.appendChild(wrapper);
+        });
+
+        // Render new images
+        newFiles.forEach((file, idx) => {
+            const wrapper = document.createElement('div');
+            wrapper.classList.add('thumbnail-wrapper', 'position-relative');
+            wrapper.dataset.index = idx;
+            wrapper.dataset.type = 'new';
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                wrapper.innerHTML = `
+                    <img src="${e.target.result}" class="thumbnail rounded border" style="width:80px; height:60px; object-fit:cover; cursor:pointer;">
+                    <button type="button" class="btn btn-sm btn-danger position-absolute top-0 end-0 remove-thumb">×</button>
+                `;
+            }
+            reader.readAsDataURL(file);
+            thumbnails.appendChild(wrapper);
+        });
+
+        // Click thumbnail to update main preview
+        thumbnails.querySelectorAll('.thumbnail').forEach(img => {
+            img.addEventListener('click', function() {
+                mainWrapper.innerHTML =
+                    `<img id="mainPreview" src="${this.src}" style="width:100%; height:100%; object-fit:cover;">`;
+            });
+        });
+    }
+
+    // Open file input when "Add Images" is clicked
+    addImagesBtn.addEventListener('click', () => imageInput.click());
+
+    // When new images selected
+    imageInput.addEventListener('change', function() {
+        Array.from(this.files).forEach(f => newFiles.push(f));
+        renderThumbnails();
+        this.value = ''; // reset input
+    });
+
+    // Remove image
+    thumbnails.addEventListener('click', function(e) {
+        if (!e.target.classList.contains('remove-thumb')) return;
+
+        const wrapper = e.target.closest('.thumbnail-wrapper');
+        const idx = parseInt(wrapper.dataset.index);
+        const type = wrapper.dataset.type;
+
+        if (type === 'old') oldImages.splice(idx, 1);
+        if (type === 'new') newFiles.splice(idx, 1);
+
+        renderThumbnails();
+    });
+
+    // On submit, update hidden input and ensure new files are attached
+    document.getElementById('propertyForm').addEventListener('submit', function() {
+        propertyImagesJson.value = JSON.stringify(oldImages);
+
+        const dt = new DataTransfer();
+        newFiles.forEach(f => dt.items.add(f));
+        imageInput.files = dt.files;
+    });
+
+    // Initial render
     renderThumbnails();
 </script>

@@ -23,6 +23,7 @@ use App\Http\Controllers\InsightController;
 use App\Http\Controllers\BulkImportController;
 use App\Http\Controllers\BusinessShippingController;
 use App\Http\Controllers\BusinessTaxiController;
+use App\Http\Controllers\TrashedController;
 
 Route::get('/', function () {
     return redirect()->route('dashboard');
@@ -36,7 +37,7 @@ Route::middleware('auth:admin')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
     //Cards
-    Route::resource('cards', CardController::class);
+    Route::resource('cards', CardController::class)->withoutMiddleware('auth:admin');;
     Route::post('/bulk-import', [CardController::class, 'bulkImport'])->name('cards.bulk.import');
     Route::get('/cards/demo/download', [CardController::class, 'downloadDemo'])->name('cards.demo.download');
 
@@ -143,6 +144,12 @@ Route::middleware('auth:admin')->group(function () {
     // Route::get('/chart', function () {
     //     return view('demo');
     // });
+    // trashed
+    Route::get('/trashed', [TrashedController::class, 'Index'])->name('business_taxis.trashed');
+    Route::post('/trashed/restore/{table}/{id}', [TrashedController::class, 'restore'])->name('trashed.restore');
+    Route::post('/trashed/force-delete/{table}/{id}', [TrashedController::class, 'forceDelete'])->name('trashed.forceDelete');
+    Route::get('/generate-number/{table}', [TrashedController::class, 'generateUniqueNumber']);
+
     Route::fallback(function () {
         return redirect()->route('login');
     });

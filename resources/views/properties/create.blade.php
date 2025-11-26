@@ -12,8 +12,7 @@
             </div>
 
             <!-- Hidden File Input -->
-            {{-- <input type="file" id="propertyImages" name="property_images[]" multiple class="d-none" accept="image/*"> --}}
-            <input type="file" id="imageInput" name="property_images[]" multiple class="d-none" accept="image/*">
+            <input type="file" id="propertyImages" name="property_images[]" multiple class="d-none" accept="image/*">
 
             <!-- Thumbnails -->
             <div id="imagePreview" class="d-flex gap-2 flex-wrap" style="max-width:400px;"></div>
@@ -34,7 +33,16 @@
         <label class="form-label fw-bold">Address</label>
         <textarea name="address" class="form-control" rows="2" required>{{ old('address') }}</textarea>
     </div>
-
+    <div class="mb-3">
+        <label class="form-label">No</label>
+        <div class="input-group">
+            <input type="number" id="noInput" name="no" class="form-control" placeholder="Enter or Generate"
+                required>
+            <button type="button" class="btn btn-info btn-sm generate-number-btn" data-table="Property">
+                Generate Number
+            </button>
+        </div>
+    </div>
     <!-- Price -->
     <div class="mb-3">
         <label class="form-label fw-bold">Price</label>
@@ -43,145 +51,57 @@
 
     <button type="submit" class="btn btn-primary">Create Property</button>
 </form>
-<script>
-    // function initPropertyImagePreview(container) {
-    //     const form = container.querySelector('#propertyForm');
-    //     // if (!form || form.dataset.previewInit === "true") return;
-    //     if (window.previewInit) return;
-    //     window.previewInit = true;
-    //     form.dataset.previewInit = "true";
 
-    //     // const input = form.querySelector('#propertyImages');
 
-    //     const input = form.querySelector('#imageInput');
-    //     const preview = form.querySelector('#imagePreview');
-    //     const mainWrapper = form.querySelector('#mainPreviewWrapper');
-    //     const addBtn = form.querySelector('#addImagesBtn');
-    //     let filesArray = [];
-
-    //     function updatePreview() {
-    //         preview.innerHTML = '';
-    //         filesArray.forEach((file, index) => {
-    //             const reader = new FileReader();
-    //             reader.onload = function(e) {
-    //                 const wrapper = document.createElement('div');
-    //                 wrapper.classList.add('position-relative', 'me-2', 'mb-2');
-    //                 wrapper.style.width = '100px';
-    //                 wrapper.style.height = '80px';
-    //                 wrapper.dataset.index = index;
-    //                 wrapper.innerHTML = `
-    //             <img src="${e.target.result}" class="rounded border thumbnail" style="width:100%; height:100%; object-fit:cover; cursor:pointer;">
-    //             <button type="button" class="btn btn-sm btn-danger position-absolute top-0 end-0 remove-image">×</button>
-    //         `;
-    //                 preview.appendChild(wrapper);
-    //                 if (index === 0) {
-    //                     mainWrapper.innerHTML =
-    //                         `<img id="mainPreview" src="${e.target.result}" style="width:100%; height:100%; object-fit:cover;">`;
-    //                 }
-    //                 wrapper.querySelector('.thumbnail').addEventListener('click', function() {
-    //                     mainWrapper.innerHTML =
-    //                         `<img id="mainPreview" src="${this.src}" style="width:100%; height:100%; object-fit:cover;">`;
-    //                 });
-    //                 wrapper.querySelector('.remove-image').addEventListener('click', function() {
-    //                     filesArray.splice(index, 1);
-    //                     updatePreview();
-    //                 });
-    //             };
-    //             reader.readAsDataURL(file);
-    //         });
-    //     }
-    //     addBtn.addEventListener('click', () => input.click());
-    //     input.addEventListener('change', function() {
-    //         const newFiles = Array.from(this.files);
-    //         newFiles.forEach(file => {
-    //             if (!filesArray.some(f => f.name === file.name && f.size === file.size)) {
-    //                 filesArray.push(file);
-    //             }
-    //         });
-    //         updatePreview();
-    //         this.value = '';
-    //     });
-    //     preview.addEventListener('click', function(e) {
-    //         if (e.target.classList.contains('remove-image')) {
-    //             const wrapper = e.target.closest('div.position-relative');
-    //             const index = parseInt(wrapper.dataset.index);
-    //             if (!isNaN(index)) {
-    //                 filesArray.splice(index, 1);
-    //                 updatePreview();
-    //             }
-    //         }
-    //     });
-    //     form.addEventListener('submit', function(e) {
-    //         const dt = new DataTransfer();
-    //         filesArray.forEach(f => dt.items.add(f));
-    //         input.files = dt.files;
-    //     });
-    // }
-    // document.addEventListener('DOMContentLoaded', function() {
-    //     initPropertyImagePreview(document);
-    // });
-</script>
 
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
+    function initPropertyImagePreview(container) {
+        const form = container.querySelector('#propertyForm');
+        if (!form || form.dataset.previewInit === "true") return; // Prevent double init
+        form.dataset.previewInit = "true";
 
-        const form = document.getElementById('propertyForm');
-        const input = document.getElementById('imageInput');
-        const preview = document.getElementById('imagePreview');
-        const mainWrapper = document.getElementById('mainPreviewWrapper');
-        const addBtn = document.getElementById('addImagesBtn');
-        const placeholder = document.getElementById('mainPlaceholder');
+        const input = form.querySelector('#propertyImages');
+        const preview = form.querySelector('#imagePreview');
+        const mainWrapper = form.querySelector('#mainPreviewWrapper');
+        const addBtn = form.querySelector('#addImagesBtn');
 
         let filesArray = [];
 
         function updatePreview() {
             preview.innerHTML = '';
 
-            // hide "+ Image" text if first image exists
-            if (filesArray.length > 0) {
-                placeholder.style.display = 'none';
-            } else {
-                placeholder.style.display = 'flex';
-                mainWrapper.innerHTML =
-                    '<span id="mainPlaceholder" style="font-size:2rem; color:#888;">+ Image</span>';
-            }
-
             filesArray.forEach((file, index) => {
                 const reader = new FileReader();
-
                 reader.onload = function(e) {
                     const wrapper = document.createElement('div');
                     wrapper.classList.add('position-relative', 'me-2', 'mb-2');
                     wrapper.style.width = '100px';
                     wrapper.style.height = '80px';
                     wrapper.dataset.index = index;
-
                     wrapper.innerHTML = `
-                    <img src="${e.target.result}" class="rounded border thumbnail"
-                        style="width:100%; height:100%; object-fit:cover; cursor:pointer;">
-                    <button type="button"
-                        class="btn btn-sm btn-danger position-absolute top-0 end-0 remove-image">×</button>
-                `;
-
+                <img src="${e.target.result}" class="rounded border thumbnail" style="width:100%; height:100%; object-fit:cover; cursor:pointer;">
+                <button type="button" class="btn btn-sm btn-danger position-absolute top-0 end-0 remove-image">×</button>
+            `;
                     preview.appendChild(wrapper);
 
-                    // Set first image as main preview
+                    // Update main preview if this is the first image
                     if (index === 0) {
                         mainWrapper.innerHTML =
-                            `<img src="${e.target.result}" style="width:100%; height:100%; object-fit:cover;">`;
+                            `<img id="mainPreview" src="${e.target.result}" style="width:100%; height:100%; object-fit:cover;">`;
                     }
 
+                    // Add click listener for this thumbnail
                     wrapper.querySelector('.thumbnail').addEventListener('click', function() {
                         mainWrapper.innerHTML =
-                            `<img src="${this.src}" style="width:100%; height:100%; object-fit:cover;">`;
+                            `<img id="mainPreview" src="${this.src}" style="width:100%; height:100%; object-fit:cover;">`;
                     });
 
+                    // Remove button
                     wrapper.querySelector('.remove-image').addEventListener('click', function() {
                         filesArray.splice(index, 1);
                         updatePreview();
                     });
                 };
-
                 reader.readAsDataURL(file);
             });
         }
@@ -189,9 +109,25 @@
         addBtn.addEventListener('click', () => input.click());
 
         input.addEventListener('change', function() {
-            filesArray.push(...Array.from(this.files));
+            const newFiles = Array.from(this.files);
+            newFiles.forEach(file => {
+                if (!filesArray.some(f => f.name === file.name && f.size === file.size)) {
+                    filesArray.push(file);
+                }
+            });
             updatePreview();
-            this.value = ''; // reset
+            this.value = '';
+        });
+
+        preview.addEventListener('click', function(e) {
+            if (e.target.classList.contains('remove-image')) {
+                const wrapper = e.target.closest('div.position-relative');
+                const index = parseInt(wrapper.dataset.index);
+                if (!isNaN(index)) {
+                    filesArray.splice(index, 1);
+                    updatePreview();
+                }
+            }
         });
 
         form.addEventListener('submit', function(e) {
@@ -199,6 +135,9 @@
             filesArray.forEach(f => dt.items.add(f));
             input.files = dt.files;
         });
+    }
 
+    document.addEventListener('DOMContentLoaded', function() {
+        initPropertyImagePreview(document);
     });
 </script>

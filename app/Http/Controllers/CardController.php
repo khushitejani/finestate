@@ -32,6 +32,7 @@ class CardController extends Controller
     public function store(Request $request)
     {
         $request->validate([
+            'no'            => 'nullable|numeric',
             'name'          => 'required|string|max:255',
             'price'         => 'required|numeric',
             'sign_price'    => 'required|string|max:5',
@@ -45,6 +46,7 @@ class CardController extends Controller
             $fileName = $file->storeAs('cards', $uniqueName, 'public');
         }
         $card = new Card();
+        $card->no         = $request->no;
         $card->name       = $request->name;
         $card->price      = $request->price;
         $card->sign_price = $request->sign_price;
@@ -72,12 +74,14 @@ class CardController extends Controller
     public function update(Request $request, Card $card)
     {
         $request->validate([
+            'no'            => 'nullable|numeric',
             'name'          => 'required|string|max:255',
             'price'         => 'required|numeric',
             'sign_price'    => 'required|string|max:5',
             'image'      => 'nullable|image|mimes:jpg,jpeg,png,gif|max:2048',
         ]);
 
+        $card->no         = $request->no;
         $card->name       = $request->name;
         $card->price      = $request->price;
         $card->sign_price = $request->sign_price;
@@ -104,9 +108,9 @@ class CardController extends Controller
 
     public function destroy(Card $card)
     {
-        if ($card->image && Storage::disk('public')->exists($card->image)) {
-            Storage::disk('public')->delete($card->image);
-        }
+        // if ($card->image && Storage::disk('public')->exists($card->image)) {
+        //     Storage::disk('public')->delete($card->image);
+        // }
 
         $card->delete();
 
@@ -147,7 +151,7 @@ class CardController extends Controller
 
             $rowData = array_combine($headers, $row);
 
-            $excelImage = $rowData['image_path'] ?? $rowData['image'] ?? null;
+            $excelImage = $rowData['link'] ?? $rowData['link'] ?? null;
 
             if ($excelImage) {
                 $fileName = 'cards/' . ltrim($excelImage, '/');
@@ -157,7 +161,8 @@ class CardController extends Controller
 
             try {
                 Card::create([
-                    'name'        => $rowData['name'] ?? 'Untitled',
+                    'name'        => $rowData['name'] ?? ' ',
+                    'no'          => $rowData['no_'] ?? ' ',
                     'price'       => $rowData['price'] ?? 0,
                     'sign_price'  => $rowData['sign_price'] ?? '$',
                     'image'       => $fileName,

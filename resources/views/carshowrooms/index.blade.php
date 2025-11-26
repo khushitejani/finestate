@@ -27,6 +27,7 @@
                                 <thead>
                                     <tr>
                                         <th class="font-weight-bold" style="width:90px;">Image</th>
+                                        <th class="font-weight-bold">No</th>
                                         <th class="font-weight-bold">Name</th>
                                         <th class="font-weight-bold">Price</th>
                                         <th class="font-weight-bold text-end" style="width:220px;">Actions</th>
@@ -55,8 +56,7 @@
                                                 <img src="{{ $imageUrl }}" alt="{{ $showroom->name }}" class="rounded"
                                                     style="width: 50px; height: 50px; object-fit: contain; border: 1px solid #ddd; background-color: #fff; padding: 2px;">
                                             </td>
-
-
+                                            <td>{{ $showroom->no ?? 'N/A' }}</td>
                                             <td>{{ $showroom->name }}</td>
                                             <td>{{ number_format($showroom->price, 2) }}</td>
                                             <td class="text-end">

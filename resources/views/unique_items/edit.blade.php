@@ -32,6 +32,18 @@
         <label class="form-label fw-bold">Name</label>
         <input type="text" name="name" class="form-control" value="{{ old('name', $uniqueItem->name) }}" required>
     </div>
+
+    <div class="mb-3">
+        <label class="form-label">No</label>
+        <div class="input-group">
+            <input type="number" id="noInput" name="no" class="form-control" value="{{ $uniqueItem->no }}"
+                required>
+
+            <button type="button" class="btn btn-info btn-sm generate-number-btn" data-table="unique_items">
+                Generate Number
+            </button>
+        </div>
+    </div>
     <div class="mb-3">
         <label class="form-label fw-bold">Years</label>
         <input type="text" name="years" class="form-control" value="{{ old('years', $uniqueItem->years) }}"

@@ -17,7 +17,7 @@
                                 <a class="btn btn-success btn-sm open-import-modal text-end"
                                     data-title="Islands Bulk Import" data-form-url="{{ route('bulk.import.form') }}"
                                     data-form-submit="{{ route('islands.bulk.import') }}"
-                                     data-form-demo-download="{{ route('islands.demo.download') }}">
+                                    data-form-demo-download="{{ route('islands.demo.download') }}">
                                     <i class="bi bi-cloud-arrow-up me-1"></i> Open Bulk Import
                                 </a>
                             </div>
@@ -27,6 +27,7 @@
                                 <thead>
                                     <tr>
                                         <th style="width:90px;">Image</th>
+                                        <th>No</th>
                                         <th>Name</th>
                                         <th>Price</th>
                                         <th>Description</th>
@@ -53,6 +54,7 @@
                                                 <img src="{{ $imageUrl }}" alt="{{ $island->name }}" class="rounded"
                                                     style="width:50px; height:50px; object-fit:cover; border:1px solid #ddd; background-color:#fff; padding:2px;">
                                             </td>
+                                            <td>{{ $island->no ?? 'N/A' }}</td>
                                             <td>{{ $island->name }}</td>
                                             <td>{{ number_format($island->price, 2) }} ETH</td>
                                             <td>{{ $island->description }}</td>

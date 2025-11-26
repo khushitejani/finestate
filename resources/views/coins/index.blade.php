@@ -16,7 +16,7 @@
                                 <a class="btn btn-success btn-sm open-import-modal" data-title="Coins Bulk Import"
                                     data-form-url="{{ route('bulk.import.form') }}"
                                     data-form-submit="{{ route('coins.bulk.import') }}"
-                                     data-form-demo-download="{{ route('coins.demo.download') }}">
+                                    data-form-demo-download="{{ route('coins.demo.download') }}">
                                     <i class="bi bi-cloud-arrow-up me-1"></i> Bulk Import
                                 </a>
                             </div>
@@ -27,6 +27,7 @@
                                 <thead>
                                     <tr>
                                         <th class="font-weight-bold" style="width:90px;">Image</th>
+                                        <th class="font-weight-bold">No</th>
                                         <th class="font-weight-bold">Name</th>
                                         <th class="font-weight-bold">Years</th>
                                         <th class="font-weight-bold">Price</th>
@@ -50,6 +51,7 @@
                                                 <img src="{{ $imageUrl }}" alt="{{ $coin->name }}" class="rounded"
                                                     style="width:50px; height:50px; object-fit:contain; border:1px solid #ddd; background-color:#fff; padding:2px;">
                                             </td>
+                                            <td>{{ $coin->no ?? 'N/A' }}</td>
                                             <td>{{ $coin->name }}</td>
                                             <td>{{ $coin->years ?? '—' }}</td>
                                             <td>{{ number_format($coin->price, 2) }}</td>

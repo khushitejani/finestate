@@ -24,6 +24,7 @@ class RetroCarController extends Controller
     public function store(Request $request)
     {
         $request->validate([
+            'no'         => 'nullable|numeric',
             'name'       => 'required|string|max:255',
             'start_year' => 'required|integer|min:1900|max:' . date('Y'),
             'end_year'   => 'required|integer|min:1900|max:' . date('Y'),
@@ -31,10 +32,8 @@ class RetroCarController extends Controller
             'price'      => 'required|numeric',
         ]);
 
-        // Combine into one field
         $years = $request->start_year . '-' . $request->end_year;
-
-        $data = $request->only('name', 'price');
+        $data = $request->only('no','name', 'price');
         $data['years'] = $years;
 
         if ($request->hasFile('image')) {
@@ -42,7 +41,6 @@ class RetroCarController extends Controller
         }
 
         RetroCar::create($data);
-
         return response()->json(['success' => true, 'message' => 'Retro Car created successfully']);
     }
     public function edit(RetroCar $retroCar)
@@ -52,6 +50,7 @@ class RetroCarController extends Controller
     public function update(Request $request, RetroCar $retroCar)
     {
         $request->validate([
+            'no'         => 'nullable|numeric',
             'name'       => 'required|string|max:255',
             'start_year' => 'required|integer|min:1900|max:' . date('Y'),
             'end_year'   => 'required|integer|min:1900|max:' . date('Y'),
@@ -60,10 +59,9 @@ class RetroCarController extends Controller
         ]);
 
         $years = $request->start_year . '-' . $request->end_year;
-
-        $data = $request->only('name', 'price');
+        $data = $request->only('name', 'price','no');
         $data['years'] = $years;
-
+  
         if ($request->hasFile('image')) {
             if ($retroCar->image) {
                 Storage::disk('public')->delete($retroCar->image);
@@ -72,14 +70,13 @@ class RetroCarController extends Controller
         }
 
         $retroCar->update($data);
-
         return response()->json(['success' => true, 'message' => 'Retro Car updated successfully']);
     }
     public function destroy(RetroCar $retroCar)
     {
-        if ($retroCar->image) {
-            Storage::disk('public')->delete($retroCar->image);
-        }
+        // if ($retroCar->image) {
+        //     Storage::disk('public')->delete($retroCar->image);
+        // }
         $retroCar->delete();
 
         return response()->json(['success' => true, 'message' => 'Retro Car deleted successfully']);
@@ -114,11 +111,11 @@ class RetroCarController extends Controller
             foreach ($rows as $row) {
                 $rowData = @array_combine($headers, $row);
                 if (!$rowData) continue;
-
+                $no        = $rowData['no_'] ?? ' ';
                 $name      = $rowData['game_name_'] ?? 'Unknown';
                 $year      = $rowData['year'] ?? null;
                 $priceStr  = $rowData['game_price_(in_$)'] ?? '0';
-                $imagePath = $rowData['image_path'] ?? null;
+                $imagePath = $rowData['link'] ?? null;
 
                 if (empty($name) || empty($year)) continue;
 
@@ -126,6 +123,7 @@ class RetroCarController extends Controller
 
                 $data = [
                     'name'  => $name,
+                    'no'    => $no,
                     'years' => $year,
                     'price' => $price,
                     'image' => $imagePath ? 'retro_cars/' . ltrim($imagePath, '/') : 'default.jpeg',

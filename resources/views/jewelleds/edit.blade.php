@@ -25,7 +25,17 @@
         <input type="text" name="name" id="name" class="form-control"
             value="{{ old('name', $jewelled->name) }}" required>
     </div>
+    <div class="mb-3">
+        <label class="form-label">No</label>
+        <div class="input-group">
+            <input type="number" id="noInput" name="no" class="form-control" value="{{ $jewelled->no }}"
+                required>
 
+            <button type="button" class="btn btn-info btn-sm generate-number-btn" data-table="Jewelled">
+                Generate Number
+            </button>
+        </div>
+    </div>
     <div class="mb-3">
         <label for="price" class="form-label">Price</label>
         <input type="number" step="0.01" name="price" id="price" class="form-control"

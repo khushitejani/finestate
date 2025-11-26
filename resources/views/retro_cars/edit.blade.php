@@ -19,7 +19,8 @@
             <img id="imagePreview" src="{{ $retroCar->image ? asset('storage/' . $retroCar->image) : '' }}" alt="Preview"
                 style="width:100%; height:100%; object-fit:cover; display:{{ $retroCar->image ? 'block' : 'none' }};">
 
-            <span class="ciu-placeholder" style="font-size:2rem; color:#888; {{ $retroCar->image ? 'display:none;' : '' }}">+
+            <span class="ciu-placeholder"
+                style="font-size:2rem; color:#888; {{ $retroCar->image ? 'display:none;' : '' }}">+
                 Image</span>
         </div>
 
@@ -31,6 +32,17 @@
             value="{{ old('name', $retroCar->name ?? '') }}" required>
     </div>
 
+    <div class="mb-3">
+        <label class="form-label">No</label>
+        <div class="input-group">
+            <input type="number" id="noInput" name="no" class="form-control" value="{{ $retroCar->no }}"
+                required>
+
+            <button type="button" class="btn btn-info btn-sm generate-number-btn" data-table="retro_cars">
+                Generate Number
+            </button>
+        </div>
+    </div>
     <div class="row mb-3">
         <div class="col-md-6">
             <label for="start_year" class="form-label">Start Year</label>

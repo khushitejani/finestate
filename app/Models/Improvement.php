@@ -3,13 +3,16 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Improvement extends Model
 {
-    protected $fillable = ['image', 'name', 'price'];
+    use  SoftDeletes;
+    protected $fillable = ['no', 'image', 'name', 'price'];
 
     public function property()
     {
         return $this->belongsTo(Property::class);
     }
+    protected $dates = ['deleted_at'];
 }

@@ -28,6 +28,7 @@ class AircraftShopController extends Controller
     public function store(Request $request)
     {
         $request->validate([
+            'no'            => 'nullable|numeric',
             'name'          => 'required|string|max:255',
             'price'         => 'required|numeric',
             'description'   => 'required|string',
@@ -44,6 +45,7 @@ class AircraftShopController extends Controller
             }
         }
         $aircraftShop = new AircraftShop();
+        $aircraftShop->no = $request->no;
         $aircraftShop->name = $request->name;
         $aircraftShop->price = $request->price;
         $aircraftShop->description = $request->description;
@@ -73,6 +75,7 @@ class AircraftShopController extends Controller
         $aircraftShop = AircraftShop::findOrFail($id);
 
         $request->validate([
+            'no'            => 'nullable|numeric',
             'name'          => 'required|string|max:255',
             'price'         => 'required|numeric',
             'description'   => 'required|string',
@@ -101,7 +104,7 @@ class AircraftShopController extends Controller
                 Storage::disk('public')->delete($img);
             }
         }
-
+        $aircraftShop->no = $request->no;
         $aircraftShop->name = $request->name;
         $aircraftShop->price = $request->price;
         $aircraftShop->description = $request->description;
@@ -127,9 +130,9 @@ class AircraftShopController extends Controller
                 'message' => 'Aircraft Shop not found.'
             ], 404);
         }
-        if ($aircraftShop->image && Storage::disk('public')->exists($aircraftShop->image)) {
-            Storage::disk('public')->delete($aircraftShop->image);
-        }
+        // if ($aircraftShop->image && Storage::disk('public')->exists($aircraftShop->image)) {
+        //     Storage::disk('public')->delete($aircraftShop->image);
+        // }
         $aircraftShop->delete();
         return response()->json([
             'success' => true,
@@ -169,12 +172,14 @@ class AircraftShopController extends Controller
                 $rowData = array_combine($headers, $row);
                 $priceStr = $rowData['game_price__in___'] ?? '0';
                 $price = floatval(str_replace([',', '$'], '', $priceStr));
+                $no = isset($rowData['no_']) ? intval($rowData['no_']) : null;
                 AircraftShop::create([
                     'name' => $rowData['game_name_'] ?? 'Unknown',
+                    'no' => $no,
                     'address' => $rowData['real_name_'] ?? 'Unknown',
                     'price' => $price,
                     'description' => $rowData['company_name'] ?? 'Unknown',
-                    'images' => json_encode(array_map(fn($img) => 'aircraftshops/' . ltrim(str_replace('\\', '/', $img), '/'), explode(',', $rowData['image_path'] ?? '')), JSON_UNESCAPED_SLASHES),
+                    'images' => json_encode(array_map(fn($img) => 'aircraftshops/' . ltrim(str_replace('\\', '/', $img), '/'), explode(',', $rowData['link'] ?? '')), JSON_UNESCAPED_SLASHES),
                 ]);
                 $importedCount++;
             }
@@ -192,7 +197,7 @@ class AircraftShopController extends Controller
 
     public function downloadDemo()
     {
-        $filePath = public_path('assets/demo-files/aircraftshops.xlsx'); 
+        $filePath = public_path('assets/demo-files/aircraftshops.xlsx');
 
         if (file_exists($filePath)) {
             return response()->download($filePath, 'aircraftshops_demo.xlsx');

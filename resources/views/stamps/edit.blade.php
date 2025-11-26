@@ -23,10 +23,22 @@
         <label>Name</label>
         <input type="text" name="name" class="form-control" value="{{ $stamp->name }}" required>
     </div>
+
+    <div class="mb-3">
+        <label class="form-label">No</label>
+        <div class="input-group">
+            <input type="number" id="noInput" name="no" class="form-control" value="{{ $stamp->no }}"
+                required>
+
+            <button type="button" class="btn btn-info btn-sm generate-number-btn" data-table="stamps">
+                Generate Number
+            </button>
+        </div>
+    </div>
     <!-- Years -->
     <div class="mb-3">
         <label>Years</label>
-        <input type="text" name="years" class="form-control" value="{{$stamp->years}}"
+        <input type="text" name="years" class="form-control" value="{{ $stamp->years }}"
             placeholder="e.g. 1965–1999" required>
         @error('years')
             <small class="text-danger">{{ $message }}</small>

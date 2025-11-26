@@ -27,6 +27,7 @@
                                 <thead>
                                     <tr>
                                         <th style="width:90px;">Image</th>
+                                        <th>No</th>
                                         <th>Name</th>
                                         <th class="font-weight-bold">Years</th>
                                         <th>Conditions</th>
@@ -50,6 +51,7 @@
                                                 <img src="{{ $imageUrl }}" class="rounded"
                                                     style="height:50px; width:50px; object-fit:cover; border:1px solid #ddd; background-color:#fff; padding:2px;">
                                             </td>
+                                            <td>{{ $insight->no ?? 'N/A' }}</td>
                                             <td>{{ $insight->name }}</td>
                                             <td>{{ $insight->years ?? '—' }}</td>
                                             <td>

@@ -24,6 +24,7 @@ class InsightController extends Controller
     public function store(Request $request)
     {
         $request->validate([
+            'no'         => 'nullable|numeric',
             'name'       => 'required|string|max:255',
             'years'      => 'required|string|max:20',
             'conditions' => 'nullable|string',
@@ -36,6 +37,7 @@ class InsightController extends Controller
         }
 
         Insight::create([
+            'no'          => $request->no,
             'name'        => $request->name,
             'years'       => $request->years,
             'conditions'  => $request->conditions,
@@ -57,6 +59,7 @@ class InsightController extends Controller
     public function update(Request $request, Insight $insight)
     {
         $request->validate([
+            'no'         => 'nullable|numeric',
             'name'       => 'required|string|max:255',
             'years'      => 'required|string|max:20',
             'conditions' => 'nullable|string',
@@ -71,10 +74,11 @@ class InsightController extends Controller
         }
 
         $insight->update([
-            'name' => $request->name,
-            'years' => $request->years,
+            'no'         => $request->no,
+            'name'       => $request->name,
+            'years'      => $request->years,
             'conditions' => $request->conditions,
-            'image' => $insight->image,
+            'image'      => $insight->image,
         ]);
 
         return response()->json([
@@ -85,9 +89,9 @@ class InsightController extends Controller
 
     public function destroy(Insight $insight)
     {
-        if ($insight->image) {
-            Storage::disk('public')->delete($insight->image);
-        }
+        // if ($insight->image) {
+        //     Storage::disk('public')->delete($insight->image);
+        // }
 
         $insight->delete();
 
@@ -129,11 +133,12 @@ class InsightController extends Controller
 
                 $insightData = [
                     'name'        => $rowData['name'] ?? null,
+                    'no'          => $rowData['no_'] ?? ' ',
                     'years'       => $rowData['years'] ?? null,
                     'conditions'  => $rowData['conditions'] ?? null,
                 ];
 
-                $excelImage = $rowData['image_path'] ?? $rowData['image'] ?? null;
+                $excelImage = $rowData['link'] ?? $rowData['link'] ?? null;
                 $fileName = $excelImage
                     ? 'insights/' . ltrim($excelImage, '/')
                     : 'default.jpeg';

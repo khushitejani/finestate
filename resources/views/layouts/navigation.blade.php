@@ -126,7 +126,9 @@
                         onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
                         <i class="dropdown-item-icon icon-power text-primary"></i> Sign Out
                     </a>
-
+                    <a href="{{ route('business_taxis.trashed') }}" class="dropdown-item">
+                        <i class="dropdown-item-icon icon-trash text-warning"></i> Recently Deleted
+                    </a>
                     <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
                         @csrf
                     </form>

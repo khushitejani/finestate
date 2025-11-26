@@ -32,6 +32,7 @@ class UniqueItemController extends Controller
     public function store(Request $request)
     {
         $request->validate([
+            'no'            => 'nullable|numeric',
             'name'          => 'required|string|max:255|unique:unique_items,name',
             'years'         => 'required|string|max:20',
             'price'         => 'required|numeric',
@@ -45,6 +46,7 @@ class UniqueItemController extends Controller
         }
 
         UniqueItem::create([
+            'no'    => $request->no,
             'name'  => $request->name,
             'years' => $request->years,
             'price' => $request->price,
@@ -76,6 +78,7 @@ class UniqueItemController extends Controller
     public function update(Request $request, UniqueItem $uniqueItem)
     {
         $request->validate([
+            'no'            => 'nullable|numeric',
             'name'          => 'required|string|max:255|unique:unique_items,name,' . $uniqueItem->id,
             'years'         => 'required|string|max:20',
             'price'         => 'required|numeric',
@@ -83,6 +86,7 @@ class UniqueItemController extends Controller
         ]);
 
         $data = [
+            'no'    => $request->no,
             'name'  => $request->name,
             'years' => $request->years,
             'price' => $request->price,
@@ -107,9 +111,9 @@ class UniqueItemController extends Controller
     public function destroy(string $id)
     {
         $item = UniqueItem::findOrFail($id);
-        if ($item->image && Storage::disk('public')->exists($item->image)) {
-            Storage::disk('public')->delete($item->image);
-        }
+        // if ($item->image && Storage::disk('public')->exists($item->image)) {
+        //     Storage::disk('public')->delete($item->image);
+        // }
         $item->delete();
 
         return response()->json(['success' => true, 'message' => 'Item deleted successfully.']);
@@ -146,18 +150,20 @@ class UniqueItemController extends Controller
             $rowData = array_combine($headers, $row);
 
             $coinData = [
+                'no'    => $rowData['no_'] ?? null,
                 'name'  => $rowData['name'] ?? null,
                 'years' => $rowData['years'] ?? null,
                 'price' => $rowData['price'] ?? null,
             ];
             $fileName = null;
-            $excelImage = $rowData['image_path'] ?? $rowData['image'] ?? null;
+            $excelImage = $rowData['link'] ?? $rowData['link'] ?? null;
             if ($excelImage) {
                 $fileName = 'unique_items/' . ltrim($excelImage, '/');
             } else {
                 $fileName = 'default.jpeg';
             }
             UniqueItem::create([
+                'no'    => $coinData['no'],
                 'name'  => $coinData['name'],
                 'years' => $coinData['years'],
                 'price' => $coinData['price'],
