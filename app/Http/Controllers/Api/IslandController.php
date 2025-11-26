@@ -13,10 +13,27 @@ class IslandController extends Controller
         $islands = Island::all();
 
         $data = $islands->map(function ($island) {
+             $images = [];
+
+            if (!empty($island->images)) {
+                if (is_string($island->images)) {
+                    $imagesArray = json_decode($island->images, true);
+                } elseif (is_array($island->images)) {
+                    $imagesArray = $island->images;
+                } else {
+                    $imagesArray = [];
+                }
+                $images = array_map(function ($img) {
+                    return asset('storage/' . ltrim(str_replace('\\/', '/', $img), '/'));
+                }, $imagesArray);
+            }
+            if (empty($images)) {
+                $images[] = asset('default.jpeg');
+            }
             return [
                 'id' => $island->id,
                 'name' => $island->name,
-                'image' => $island->image ? asset('storage/' . ltrim($island->image, '/')) : null,
+                'image' => $images,
                 'price' => $island->price,
                 'description' => $island->description,
                 'created_at' => $island->created_at?->toDateTimeString(),

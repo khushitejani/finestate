@@ -599,7 +599,6 @@
             loader.classList.add('d-none');
             if (xhr.status === 200) {
                 loadFolder(currentFolder);
-                console.log('✅ Upload complete:', JSON.parse(xhr.responseText));
             } else {
                 console.error('Server error during upload.');
             }

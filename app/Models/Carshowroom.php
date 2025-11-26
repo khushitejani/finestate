@@ -14,6 +14,7 @@ class Carshowroom extends Model
         'name',
         'price',
         'images',
+        'level',
     ];
     protected $casts = [
         'images' => 'array',

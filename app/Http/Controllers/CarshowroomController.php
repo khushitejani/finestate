@@ -37,6 +37,7 @@ class CarshowroomController extends Controller
             'price'         => 'required|numeric',
             'images'        => 'required|array',
             'images.*'      => 'image|mimes:jpg,jpeg,png,gif,webp|max:20480',
+            'level_name'    => 'required|string|in:Budget,Standard,Premium,Luxury,Ultra-Luxury,Hypercar,Legendary',
         ]);
 
         $uploadedImages = [];
@@ -54,6 +55,7 @@ class CarshowroomController extends Controller
         $carshowroom->name  = $request->name;
         $carshowroom->price = $request->price;
         $carshowroom->images = json_encode($uploadedImages, JSON_UNESCAPED_SLASHES);
+        $carshowroom->level = $request->level_name;
         $carshowroom->save();
 
         return response()->json([
@@ -89,11 +91,13 @@ class CarshowroomController extends Controller
             'price' => 'required|numeric',
             'images.*' => 'nullable|image|mimes:jpg,jpeg,png,gif,webp|max:20480',
             'existing_images' => 'nullable|string',
+            'level_name'  => 'required|string|in:Budget,Standard,Premium,Luxury,Ultra-Luxury,Hypercar,Legendary',
         ]);
 
         $carshowroom->name = $request->name;
         $carshowroom->price = $request->price;
-        $carshowroom->no    = $request->no; 
+        $carshowroom->no    = $request->no;
+        $carshowroom->level = $request->level_name;
         $existingImages = $request->existing_images ? json_decode($request->existing_images, true) : [];
         $uploadedImages = [];
         if ($request->hasFile('images')) {
@@ -162,7 +166,8 @@ class CarshowroomController extends Controller
                 $no        = $rowData['no_'] ?? ' ';
                 $name      = $rowData['game_name_'] ?? $rowData['game_name'] ?? null;
                 $priceStr  = $rowData['game_price__in___'] ?? $rowData['game_price_in_'] ?? $rowData['price'] ?? null;
-                $imagesStr = $rowData['link'] ?? '';
+                $imagesStr = $rowData['link'];
+                $level     = $rowData['car_level'] ?? null;
 
                 if (empty($name) || empty($priceStr)) continue;
 
@@ -175,6 +180,7 @@ class CarshowroomController extends Controller
                     'no'     => $no,
                     'price'  => $price,
                     'images' => json_encode($images, JSON_UNESCAPED_SLASHES),
+                    'level'  => $level,
                 ]);
 
                 $importedCount++;

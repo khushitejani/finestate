@@ -143,3 +143,35 @@
             </li>
         </ul>
     </nav>
+{{-- 
+
+    <style>
+        /* Make sidebar sticky */
+        .sidebar {
+            position: sticky;
+            top: 0;
+            /* Distance from the top of the viewport */
+            height: 100vh;
+            /* Full height of viewport */
+            overflow-y: auto;
+            /* Add scrollbar only for sidebar if needed */
+            background-color: #181824;
+            /* optional: to ensure background covers content */
+            z-index: 1000;
+            /* make sure it stays above other content */
+        }
+
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 100vh;
+            overflow-y: auto;
+        }
+
+      
+        .content-wrapper {
+            margin-left: 240px;
+            /* width of your sidebar */
+        }
+    </style> --}}

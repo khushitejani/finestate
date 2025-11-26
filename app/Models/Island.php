@@ -8,14 +8,17 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Island extends Model
 {
-    use HasFactory,SoftDeletes;
+    use HasFactory, SoftDeletes;
 
     protected $fillable = [
         'no',
         'name',
-        'image',
         'price',
         'description',
+        'images',
     ];
-     protected $dates = ['deleted_at'];
+    protected $casts = [
+        'images' => 'array',
+    ];
+    protected $dates = ['deleted_at'];
 }

@@ -20,6 +20,7 @@ class CarshowroomController extends Controller
                 'id' => $car->id,
                 'name' => $car->name,
                 'price' => $car->price,
+                'car_level' => $car->level,
                 'images' => $images,
                 'created_at' => $car->created_at ? $car->created_at->toDateTimeString() : null,
                 'updated_at' => $car->updated_at ? $car->updated_at->toDateTimeString() : null,

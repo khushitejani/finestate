@@ -26,19 +26,28 @@ class IslandController extends Controller
             'name' => 'required|string|max:255',
             'price' => 'required|numeric',
             'description' => 'nullable|string',
-            'image' => 'nullable|image|max:2048',
+            'images' => 'required|array',
+            'images.*' => 'image|mimes:jpg,jpeg,png,gif,webp|max:20480',
         ]);
-
-        if ($request->hasFile('image')) {
-            $data['image'] = $request->file('image')->store('islands', 'public');
+        $uploadedImages = [];
+        if ($request->hasFile('images')) {
+            foreach ($request->file('images') as $file) {
+                $uniqueName = uniqid('island_') . '.' . $file->getClientOriginalExtension();
+                $path = $file->storeAs('islands', $uniqueName, 'public');
+                $uploadedImages[] = $path;
+            }
         }
-
-        $island = Island::create($data);
+        Island::create([
+            'no' => $request->no,
+            'name' => $request->name,
+            'price' => $request->price,
+            'description' => $request->description,
+            'images' => $uploadedImages,
+        ]);
 
         return response()->json([
             'success' => true,
             'message' => 'Island created successfully!',
-            'data' => $island
         ]);
     }
 
@@ -54,17 +63,24 @@ class IslandController extends Controller
             'name' => 'required|string|max:255',
             'price' => 'required|numeric',
             'description' => 'nullable|string',
-            'image' => 'nullable|image|max:2048',
+            'images.*' => 'image|mimes:jpeg,png,jpg,webp|max:2048'
         ]);
 
-        if ($request->hasFile('image')) {
-            if ($island->image) {
-                Storage::disk('public')->delete($island->image);
-            }
-            $data['image'] = $request->file('image')->store('islands', 'public');
-        }
+        $finalImages = $request->existing_images ?? [];
 
-        $island->update($data);
+        if ($request->hasFile('images')) {
+            foreach ($request->file('images') as $image) {
+                $path = $image->store('islands', 'public');
+                $finalImages[] = $path;
+            }
+        }
+        $island->update([
+            'no' => $request->no,
+            'name' => $request->name,
+            'price' => $request->price,
+            'description' => $request->description,
+            'images' => $finalImages,
+        ]);
 
         return response()->json([
             'success' => true,
@@ -110,7 +126,7 @@ class IslandController extends Controller
 
             $rawHeaders = array_shift($rows);
             $headers = array_map(function ($h) {
-                return strtolower(trim(str_replace([' ', '-', '(', ')', '$'], ['_', '_', '', '', ''], $h)));
+                return strtolower(trim(str_replace([' ', '.', '-', '(', ')', '$'], ['_', '_', '_', '', '', ''], $h)));
             }, $rawHeaders);
 
             $importedCount = 0;
@@ -120,22 +136,29 @@ class IslandController extends Controller
 
                 $name = $rowData['game_name'] ?? $rowData['name'] ?? 'Unknown';
                 $no          = $rowData['no_'] ?? ' ';
-                $description = $rowData['location'] ?? null;
+                $description = $rowData['description'] ?? null;
                 $price = isset($rowData['price']) ? floatval(str_replace(['$', ',', '₹'], '', $rowData['price'])) : 0;
 
-                $excelImage = $rowData['link'] ?? $rowData['link'] ?? null;
-                if ($excelImage) {
-                    $storedImagePath = 'islands/' . ltrim($excelImage, '/');
-                } else {
-                    $storedImagePath = 'default.jpeg';
+                $images = [];
+                if (!empty($rowData['link'])) {
+                    $rawImages = explode(',', $rowData['link']);
+                    foreach ($rawImages as $img) {
+                        $img = trim($img);
+                        if ($img) {
+                            $images[] = 'islands/' . ltrim($img, '/');
+                        }
+                    }
                 }
 
+                if (empty($images)) {
+                    $images[] = 'default.jpeg';
+                }
                 Island::create([
                     'name' => $name,
                     'price' => $price,
                     'no'          => $no,
                     'description' => $description,
-                    'image' => $storedImagePath,
+                    'images' => $images,
                 ]);
 
                 $importedCount++;

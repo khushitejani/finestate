@@ -37,6 +37,25 @@
             </button>
         </div>
     </div>
+
+    <div class="mb-3">
+        <label class="form-label fw-bold">Level Name</label>
+        <select name="level_name" class="form-control" required>
+            <option value="" disabled {{ old('level_name') ? '' : 'selected' }}>Select Level</option>
+            @php
+                $levels = ['Budget', 'Standard', 'Premium', 'Luxury', 'Ultra-Luxury', 'Hypercar', 'Legendary'];
+            @endphp
+            @foreach ($levels as $level)
+                <option value="{{ $level }}" {{ old('level_name') == $level ? 'selected' : '' }}>
+                    {{ $level }}
+                </option>
+            @endforeach
+        </select>
+        @error('level_name')
+            <small class="text-danger">{{ $message }}</small>
+        @enderror
+    </div>
+
     <!-- Price -->
     <div class="mb-3">
         <label class="form-label fw-bold">Price</label>
@@ -106,12 +125,12 @@
                     if (index === 0) {
                         mainWrapper.html(
                             `<img id="mainPreview" src="${e.target.result}" style="width:100%; height:100%; object-fit:cover;">`
-                            );
+                        );
                     }
                     img.on('click', function() {
                         mainWrapper.html(
                             `<img id="mainPreview" src="${this.src}" style="width:100%; height:100%; object-fit:cover;">`
-                            );
+                        );
                     });
                     removeBtn.on('click', function() {
                         filesArray.splice(index, 1);

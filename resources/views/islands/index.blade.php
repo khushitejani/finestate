@@ -40,14 +40,19 @@
                                             <td>
                                                 @php
                                                     $defaultImage = asset('default.jpeg');
-                                                    $imagePath = $island->image;
+                                                    if (is_array($island->images)) {
+                                                        $imgArray = $island->images;
+                                                    } else {
+                                                        $imgArray = json_decode($island->images ?? '[]', true);
+                                                    }
+
+                                                    $imgArray = is_array($imgArray) ? $imgArray : [];
+
+                                                    $firstImage = $imgArray[0] ?? null;
 
                                                     $imageUrl =
-                                                        $imagePath &&
-                                                        \Illuminate\Support\Facades\Storage::disk('public')->exists(
-                                                            $imagePath,
-                                                        )
-                                                            ? asset('storage/' . $imagePath)
+                                                        $firstImage && Storage::disk('public')->exists($firstImage)
+                                                            ? asset('storage/' . $firstImage)
                                                             : $defaultImage;
                                                 @endphp
 

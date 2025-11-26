@@ -36,6 +36,27 @@
         <input type="text" name="name" class="form-control" value="{{ old('name', $carshowroom->name) }}"
             required>
     </div>
+
+    <div class="mb-3">
+        <label class="form-label fw-bold">Level Name</label>
+        <select name="level_name" class="form-control" required>
+            <option value="" disabled {{ old('level_name', $carShowroom->level_name ?? '') ? '' : 'selected' }}>
+                Select Level</option>
+            @php
+                $levels = ['Budget', 'Standard', 'Premium', 'Luxury', 'Ultra-Luxury', 'Hypercar', 'Legendary'];
+                $selectedLevel = old('level_name', $carShowroom->level_name ?? '');
+            @endphp
+            @foreach ($levels as $level)
+                <option value="{{ $level }}" {{ $selectedLevel == $level ? 'selected' : '' }}>
+                    {{ $level }}
+                </option>
+            @endforeach
+        </select>
+        @error('level_name')
+            <small class="text-danger">{{ $message }}</small>
+        @enderror
+    </div>
+
     <div class="mb-3">
         <label class="form-label">No</label>
         <div class="input-group">

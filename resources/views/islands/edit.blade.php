@@ -1,23 +1,34 @@
 <form id="islandForm" action="{{ route('islands.update', $island->id) }}" method="POST" enctype="multipart/form-data">
     @csrf
     @method('PUT')
-    <div id="card-image-uploader-modal">
-        <label class="form-label fw-bold d-block">Retro Cars Image</label>
+    {{-- Images --}}
+    <div class="mb-3">
+        <label class="form-label fw-bold">Island Images</label>
+        <div class="d-flex flex-column align-items-center">
+            {{-- Main Preview --}}
+            <div id="mainPreviewWrapper"
+                style="width:400px; height:200px; border:2px dashed #ccc; display:flex; align-items:center; justify-content:center; margin-bottom:10px; overflow:hidden; border-radius:12px;">
+                <span id="mainPlaceholder" style="font-size:2rem; color:#888;">+ Image</span>
+            </div>
 
-        <div class="ciu-box mx-auto position-relative"
-            style="width:100%; max-width:420px; height:auto; cursor:pointer;
-                display:flex; align-items:center; justify-content:center;
-                background:#f9f9f9; border:2px dashed #ccc; border-radius:12px; overflow:hidden;">
+            <input type="file" name="images[]" id="imageInput" class="d-none" accept="image/*" multiple>
+            <div id="imagePreview" class="d-flex gap-2 flex-wrap" style="max-width:400px;">
+                @php
+                    $oldImages = is_array($island->images) ? $island->images : json_decode($island->images, true);
+                    $oldImages = is_array($oldImages) ? $oldImages : [];
+                @endphp
+                @foreach ($oldImages as $img)
+                    <div class="position-relative me-2 mb-2" style="width:100px; height:80px;">
+                        <img src="{{ asset('storage/' . $img) }}" class="rounded border thumbnail existing-img"
+                            style="width:100%; height:100%; object-fit:cover; cursor:pointer;">
+                        <button type="button"
+                            class="btn btn-sm btn-danger position-absolute top-0 end-0 remove-image">×</button>
+                    </div>
+                @endforeach
+            </div>
 
-            <img id="imagePreview" src="{{ $island->image ? asset('storage/' . $island->image) : '' }}" alt="Preview"
-                style="width:100%; height:100%; object-fit:cover; display:{{ $island->image ? 'block' : 'none' }};">
-
-            <span class="ciu-placeholder"
-                style="font-size:2rem; color:#888; {{ $island->image ? 'display:none;' : '' }}">+
-                Image</span>
+            <button type="button" class="btn btn-outline-primary mt-2" id="addImagesBtn">Add Images</button>
         </div>
-
-        <input type="file" name="image" id="imageInput" class="d-none" accept="image/*">
     </div>
     <div class="mb-3">
         <label>Name</label>
@@ -49,3 +60,126 @@
 
     <button type="submit" class="btn btn-primary">Update Island</button>
 </form>
+
+<script>
+    $(document).ready(function() {
+        let filesArray = [];
+        const input = $('#imageInput');
+        const addBtn = $('#addImagesBtn');
+        const preview = $('#imagePreview');
+        const mainWrapper = $('#mainPreviewWrapper');
+        const form = $('#islandForm');
+
+        // Load existing images
+        @foreach ($oldImages as $img)
+            filesArray.push({
+                existing: true,
+                path: "{{ $img }}",
+                src: "{{ asset('storage/' . $img) }}"
+            });
+        @endforeach
+
+        // Update Main Preview
+        function updateMainPreview() {
+            if (filesArray.length > 0) {
+                mainWrapper.html(
+                    `<img id="mainPreview" src="${filesArray[0].src}" style="width:100%; height:100%; object-fit:cover;">`
+                );
+            } else {
+                mainWrapper.html(
+                    '<span id="mainPlaceholder" style="font-size:2rem; color:#888;">+ Image</span>'
+                );
+            }
+        }
+
+        // Render Image Previews
+        function renderPreviews() {
+            preview.html('');
+            filesArray.forEach(file => {
+                const wrapper = $('<div>')
+                    .addClass('position-relative me-2 mb-2')
+                    .css({
+                        width: '100px',
+                        height: '80px'
+                    });
+
+                const img = $('<img>')
+                    .attr('src', file.src)
+                    .addClass('rounded border thumbnail')
+                    .css({
+                        width: '100%',
+                        height: '100%',
+                        objectFit: 'cover',
+                        cursor: 'pointer'
+                    });
+
+                const removeBtn = $('<button>')
+                    .attr('type', 'button')
+                    .addClass('btn btn-sm btn-danger position-absolute top-0 end-0 remove-image')
+                    .text('×');
+
+                wrapper.append(img).append(removeBtn);
+                preview.append(wrapper);
+
+                img.on('click', () => {
+                    mainWrapper.html(
+                        `<img id="mainPreview" src="${file.src}" style="width:100%; height:100%; object-fit:cover;">`
+                    );
+                });
+
+                removeBtn.on('click', () => {
+                    filesArray = filesArray.filter(f => f !== file);
+                    renderPreviews();
+                });
+            });
+
+            updateMainPreview();
+        }
+
+        // Add New Images
+        addBtn.on('click', (e) => {
+            e.preventDefault();
+            input.trigger('click');
+        });
+
+        input.on('change', function() {
+            const newFiles = Array.from(this.files);
+
+            newFiles.forEach(file => {
+                const url = URL.createObjectURL(file);
+                filesArray.push({
+                    existing: false,
+                    file: file,
+                    src: url
+                });
+            });
+
+            input.val('');
+            renderPreviews();
+        });
+
+        // On form submit
+        form.on('submit', function() {
+            $('input[name="existing_images[]"]').remove();
+
+            // Save existing images (correct path)
+            filesArray.filter(f => f.existing).forEach(f => {
+                $('<input>').attr({
+                    type: 'hidden',
+                    name: 'existing_images[]',
+                    value: f.path
+                }).appendTo(form);
+            });
+
+            // Add new images to input field
+            const dt = new DataTransfer();
+            filesArray.forEach(f => {
+                if (!f.existing) dt.items.add(f.file);
+            });
+
+            input[0].files = dt.files;
+        });
+
+        renderPreviews();
+    });
+</script>

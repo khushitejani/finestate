@@ -30,6 +30,7 @@
                                         <th class="font-weight-bold">No</th>
                                         <th class="font-weight-bold">Name</th>
                                         <th class="font-weight-bold">Price</th>
+                                        <th class="font-weight-bold">Level</th>
                                         <th class="font-weight-bold text-end" style="width:220px;">Actions</th>
                                     </tr>
                                 </thead>
@@ -59,6 +60,7 @@
                                             <td>{{ $showroom->no ?? 'N/A' }}</td>
                                             <td>{{ $showroom->name }}</td>
                                             <td>{{ number_format($showroom->price, 2) }}</td>
+                                            <td>{{ $showroom->level ?? 'N/A' }}</td>
                                             <td class="text-end">
                                                 <a href="{{ route('carshowrooms.edit', $showroom->id) }}"
                                                     class="btn btn-sm btn-outline-primary open-card-modal"

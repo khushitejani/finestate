@@ -76,7 +76,6 @@ class BulkImportController extends Controller
 
         // Create the new root folder
         File::makeDirectory($fullDestinationPath, 0755, true);
-        Log::info("Created folder: {$fullDestinationPath}");
 
         $uploadedPaths = [];
 
@@ -96,7 +95,6 @@ class BulkImportController extends Controller
             $fullNestedPath = Storage::disk('public')->path($destinationPath);
             if (!File::exists($fullNestedPath)) {
                 File::makeDirectory($fullNestedPath, 0755, true);
-                Log::info("Created nested folder: {$fullNestedPath}");
             }
 
             // Handle file name conflicts
@@ -114,8 +112,6 @@ class BulkImportController extends Controller
 
             Storage::disk('public')->putFileAs($destinationPath, $file, $fileName);
             $uploadedPaths[] = $finalPath;
-
-            Log::info("Uploaded file: {$finalPath}");
         }
 
         // Get all subfolders & files inside the root folder
@@ -130,8 +126,6 @@ class BulkImportController extends Controller
                 'path' => $file,
             ];
         }
-
-        Log::info('Upload finished.', ['uploaded_files' => $uploadedPaths]);
 
         return response()->json([
             'message' => 'Files uploaded successfully!',
@@ -148,8 +142,6 @@ class BulkImportController extends Controller
     public function folder(Request $request)
     {
         $folder = trim($request->input('folder', ''), '/');
-        Log::info("Listing folder: {$folder}");
-
         $subfolders = Storage::disk('public')->directories($folder);
 
         $allFiles = Storage::disk('public')->allFiles($folder);
