@@ -191,11 +191,12 @@ class BusinessShippingController extends Controller
 
     public function downloadDemo()
     {
-        $filePath = public_path('assets/demo-files/shippings.xlsx');
+        $filePath = public_path('assets/demo-files/Business_Shipping.zip');
 
         if (file_exists($filePath)) {
-            return response()->download($filePath, 'shippings_demo.xlsx');
+            return response()->download($filePath, 'BusinessShipping.zip');
         }
-        abort(404, 'Demo Excel file not found.');
+
+        abort(404, 'Demo ZIP file not found.');
     }
 }

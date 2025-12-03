@@ -46,7 +46,7 @@ class TrashedController extends Controller
             'jewelleds' => Jewelled::onlyTrashed()->get(),
             'nfts' => NFT::onlyTrashed()->get(),
             'paintings' => Painting::onlyTrashed()->get(),
-            'properties' => Property::onlyTrashed()->get(),
+            'Property' => Property::onlyTrashed()->get(),
             'retro_cars' => RetroCar::onlyTrashed()->get(),
             'shares' => Share::onlyTrashed()->get(),
             'stamps' => Stamp::onlyTrashed()->get(),

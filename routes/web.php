@@ -23,6 +23,7 @@ use App\Http\Controllers\InsightController;
 use App\Http\Controllers\BulkImportController;
 use App\Http\Controllers\BusinessShippingController;
 use App\Http\Controllers\BusinessTaxiController;
+use App\Http\Controllers\PolicyController;
 use App\Http\Controllers\TrashedController;
 
 Route::get('/', function () {
@@ -113,6 +114,9 @@ Route::middleware('auth:admin')->group(function () {
 
     // cryptos
     Route::resource('cryptos', CryptocurrencyController::class);
+    Route::post('/cryptos/bulk-import', [CryptocurrencyController::class, 'bulkImport'])->name('cryptos.bulk.import');
+    Route::get('/cryptos/demo/download', [CryptocurrencyController::class, 'downloadDemo'])->name('cryptos.demo.download');
+
 
     // insights
     Route::resource('insights', InsightController::class);
@@ -138,7 +142,7 @@ Route::middleware('auth:admin')->group(function () {
     // business-shippings
     Route::resource('business-shippings', BusinessShippingController::class);
     Route::post('/business-shippings/bulk-import', [BusinessShippingController::class, 'bulkImport'])->name('business-shippings.bulk.import');
-    Route::get('/business-shippings/demo-download', [BusinessShippingController::class, 'downloadDemo'])->name('business-shippings.demo.download');
+    Route::get('/business_shippings/demo-download', [BusinessShippingController::class, 'downloadDemo'])->name('business-shippings.demo.download');
 
     // Route::get('/demo', [ShareController::class, 'intradayChart']);
     // Route::get('/chart', function () {
@@ -150,9 +154,12 @@ Route::middleware('auth:admin')->group(function () {
     Route::post('/trashed/force-delete/{table}/{id}', [TrashedController::class, 'forceDelete'])->name('trashed.forceDelete');
     Route::get('/generate-number/{table}', [TrashedController::class, 'generateUniqueNumber']);
 
-    Route::fallback(function () {
-        return redirect()->route('login');
-    });
+    Route::resource('policy', PolicyController::class);
+    Route::post('/policy/upload-pdf', [PolicyController::class, 'uploadPdf'])->name('policy.uploadPdf');
+});
+
+Route::fallback(function () {
+    return redirect()->route('login');
 });
 
 require __DIR__ . '/auth.php';

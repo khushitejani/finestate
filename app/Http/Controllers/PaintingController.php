@@ -160,17 +160,19 @@ class PaintingController extends Controller
             $rowData = array_combine($headers, $row);
 
             $coinData = [
-                'no'    => $rowData['no_'] ?? ' ',
+                'no'    => !empty($rowData['no.']) ? (int)$rowData['no.'] : null,
                 'name'  => $rowData['name'] ?? null,
                 'years' => $rowData['years'] ?? null,
-                'price' => $rowData['price'] ?? null,
+                'price' => !empty($rowData['price']) 
+                            ? floatval(str_replace([',', '$'], '', $rowData['price'])) 
+                            : null,
             ];
             $fileName = null;
             $excelImage = $rowData['link'] ?? $rowData['link'] ?? null;
             if ($excelImage) {
                 $fileName = 'paintings/' . ltrim($excelImage, '/');
             } else {
-                $fileName = 'default.jpeg';
+                $fileName = null;
             }
             Painting::create([
                 'no'    => $coinData['no'],
@@ -190,12 +192,12 @@ class PaintingController extends Controller
 
     public function downloadDemo()
     {
-        $filePath = public_path('assets/demo-files/painting.xlsx');
+       $filePath = public_path('assets/demo-files/Paintings.zip');
 
         if (file_exists($filePath)) {
-            return response()->download($filePath, 'painting_demo.xlsx');
+            return response()->download($filePath, 'Paintings.zip');
         }
 
-        abort(404, 'Demo Excel file not found.');
+        abort(404, 'ZIP file not found.');
     }
 }

@@ -27,11 +27,11 @@
                         <div class="table-responsive border rounded p-1">
                             <table class="table align-middle">
                                 <thead>
-                                    <tr>
+                                    <tr>0
                                         <th>Image</th>
                                         <th>No</th>
                                         <th>Name</th>
-                                        <th>Price</th>
+                                        <th>Price(%)</th>
                                         <th class="text-center">Actions</th>
                                     </tr>
                                 </thead>
@@ -58,7 +58,7 @@
                                             </td>
                                             <td>{{ $improvement->no ?? 'N/A' }}</td>
                                             <td>{{ $improvement->name }}</td>
-                                            <td>${{ number_format($improvement->price, 2) }}</td>
+                                            <td>{{ number_format($improvement->price) }}%</td>
                                             <td class="text-center">
                                                 <a href="{{ route('improvements.edit', $improvement->id) }}"
                                                     class="btn btn-sm btn-outline-primary open-card-modal"
@@ -103,12 +103,12 @@
                         <tr id="card-row-${improvement.id}">
                             <td>
                                 ${improvement.image_url ? `<img src="${improvement.image_url}" alt="image"
-                                                                        style="width: 60px; height: 60px; object-fit: cover; border-radius: 6px;">`
+                                      class="rounded" style="width: 50px; height: 50px; object-fit: contain; border: 1px solid #ddd; background-color: #fff; padding: 2px;">`
                                     : '<span class="text-muted">No image</span>'}
                             </td>
                             <td>${improvement.no ?? 'N/A'}</td>
                             <td>${improvement.name}</td>
-                            <td>$${Number(improvement.price).toFixed(2)}</td>
+                            <td>${Number(improvement.price)}%</td>
                             <td class="text-center">
                                 <a href="/improvements/${improvement.id}/edit"
                                     class="btn btn-sm btn-outline-primary open-card-modal"

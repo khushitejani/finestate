@@ -26,7 +26,7 @@
         <div class="input-group">
             <input type="number" id="noInput" name="no" class="form-control" placeholder="Enter or Generate"
                 required>
-            <button type="button" class="btn btn-info btn-sm generate-number-btn" data-table="yatchshop">
+            <button type="button" class="btn btn-info btn-sm generate-number-btn" data-table="YatchShop">
                 Generate Number
             </button>
         </div>

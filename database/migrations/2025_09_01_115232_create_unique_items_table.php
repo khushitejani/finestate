@@ -14,7 +14,7 @@ public function up()
     Schema::create('unique_items', function (Blueprint $table) {
         $table->id();
         $table->string('name')->unique();   // unique name
-        $table->decimal('price', 10, 2);
+        $table->decimal('price', 15, 2);
         $table->string('image')->nullable();
         $table->timestamps();
     });

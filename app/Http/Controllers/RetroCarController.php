@@ -33,7 +33,7 @@ class RetroCarController extends Controller
         ]);
 
         $years = $request->start_year . '-' . $request->end_year;
-        $data = $request->only('no','name', 'price');
+        $data = $request->only('no', 'name', 'price');
         $data['years'] = $years;
 
         if ($request->hasFile('image')) {
@@ -59,9 +59,9 @@ class RetroCarController extends Controller
         ]);
 
         $years = $request->start_year . '-' . $request->end_year;
-        $data = $request->only('name', 'price','no');
+        $data = $request->only('name', 'price', 'no');
         $data['years'] = $years;
-  
+
         if ($request->hasFile('image')) {
             if ($retroCar->image) {
                 Storage::disk('public')->delete($retroCar->image);
@@ -111,7 +111,8 @@ class RetroCarController extends Controller
             foreach ($rows as $row) {
                 $rowData = @array_combine($headers, $row);
                 if (!$rowData) continue;
-                $no        = $rowData['no_'] ?? ' ';
+                $rawNo = $rowData['no.'] ?? null;
+                $no = (is_numeric($rawNo)) ? intval($rawNo) : null;
                 $name      = $rowData['game_name_'] ?? 'Unknown';
                 $year      = $rowData['year'] ?? null;
                 $priceStr  = $rowData['game_price_(in_$)'] ?? '0';
@@ -147,12 +148,12 @@ class RetroCarController extends Controller
 
     public function downloadDemo()
     {
-        $filePath = public_path('assets/demo-files/retro_cars.xlsx');
+        $filePath = public_path('assets/demo-files/RetroCar.zip');
 
         if (file_exists($filePath)) {
-            return response()->download($filePath, 'retro_cars_demo.xlsx');
+            return response()->download($filePath, 'Retro Car.zip');
         }
 
-        abort(404, 'Demo Excel file not found.');
+        abort(404, 'ZIP file not found.');
     }
 }

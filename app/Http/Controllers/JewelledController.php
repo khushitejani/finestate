@@ -117,8 +117,12 @@ class JewelledController extends Controller
 
             $coinData = [
                 'name'  => $rowData['name'] ?? null,
-                'no'    => $rowData['no_'] ?? ' ',
-                'price' => $rowData['price'] ?? null,
+                'price' => isset($rowData['price']) 
+                           ? floatval(str_replace(['$', ','], '', $rowData['price']))
+                           : 0,
+                'no'    => isset($rowData['no.']) && trim($rowData['no.']) !== ''
+                           ? intval($rowData['no.'])
+                           : null,  
             ];
             $fileName = null;
             $excelImage = $rowData['link'] ?? $rowData['link'] ?? null;
@@ -143,12 +147,12 @@ class JewelledController extends Controller
     }
     public function downloadDemo()
     {
-        $filePath = public_path('assets/demo-files/jewels.xlsx');
+      $filePath = public_path('assets/demo-files/Jewelled.zip');
 
         if (file_exists($filePath)) {
-            return response()->download($filePath, 'jewels_demo.xlsx');
+            return response()->download($filePath, 'Jewelled.zip');
         }
 
-        abort(404, 'Demo Excel file not found.');
+        abort(404, 'ZIP file not found.');
     }
 }

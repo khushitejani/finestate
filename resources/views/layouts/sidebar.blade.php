@@ -127,18 +127,25 @@
                     <i class="icon-diamond menu-icon"></i>
                 </a>
             </li>
-            {{-- <li class="nav-item">
+            <li class="nav-item">
                 <a class="nav-link" href="{{ route('cryptos.index') }}" aria-expanded="false"
                     aria-controls="cryptos">
                     <span class="menu-title">Cryptocurrencies</span>
                     <i class="icon-wallet menu-icon"></i>
                 </a>
-            </li> --}}
+            </li>
             <li class="nav-item">
                 <a class="nav-link" href="{{ route('insights.index') }}" aria-expanded="false"
                     aria-controls="insights">
                     <span class="menu-title">Insights</span>
                     <i class="icon-layers menu-icon"></i>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{{ route('policy.index') }}" aria-expanded="false"
+                    aria-controls="policy">
+                    <span class="menu-title">Policies</span>
+                    <i class="icon-doc menu-icon"></i>
                 </a>
             </li>
         </ul>

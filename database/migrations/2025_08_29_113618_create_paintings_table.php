@@ -11,7 +11,7 @@ class CreatePaintingsTable extends Migration
         Schema::create('paintings', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->decimal('price', 10, 2);
+            $table->decimal('price', 15, 2);
             $table->string('image')->nullable(); // store image path
             $table->timestamps();
         });

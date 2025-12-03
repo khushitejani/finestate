@@ -75,11 +75,11 @@ class AircraftShopController extends Controller
         $aircraftShop = AircraftShop::findOrFail($id);
 
         $request->validate([
-            'no'            => 'nullable|numeric',
-            'name'          => 'required|string|max:255',
-            'price'         => 'required|numeric',
-            'description'   => 'required|string',
-            'images.*'      => 'nullable|image|mimes:jpg,jpeg,png,gif,webp|max:5120',
+            'no'              => 'nullable|numeric',
+            'name'            => 'required|string|max:255',
+            'price'           => 'required|numeric',
+            'description'     => 'nullable|string',
+            'images.*'        => 'nullable|image|mimes:jpg,jpeg,png,gif,webp|max:5120',
             'existing_images' => 'nullable|array',
         ]);
 
@@ -179,7 +179,14 @@ class AircraftShopController extends Controller
                     'address' => $rowData['real_name_'] ?? 'Unknown',
                     'price' => $price,
                     'description' => $rowData['company_name'] ?? 'Unknown',
-                    'images' => json_encode(array_map(fn($img) => 'aircraftshops/' . ltrim(str_replace('\\', '/', $img), '/'), explode(',', $rowData['link'] ?? '')), JSON_UNESCAPED_SLASHES),
+                    'images' => json_encode(
+                        array_map(
+                            fn($img) => 'aircraftshops/' . ltrim(trim(str_replace('\\', '/', $img)), '/'),
+                            explode(',', $rowData['link'] ?? '')
+                        ),
+                        JSON_UNESCAPED_SLASHES
+                    ),
+
                 ]);
                 $importedCount++;
             }
@@ -197,12 +204,12 @@ class AircraftShopController extends Controller
 
     public function downloadDemo()
     {
-        $filePath = public_path('assets/demo-files/aircraftshops.xlsx');
+        $filePath = public_path('assets/demo-files/Aircraftshop.zip');
 
         if (file_exists($filePath)) {
-            return response()->download($filePath, 'aircraftshops_demo.xlsx');
+            return response()->download($filePath, 'Aircraftshop.zip');
         }
 
-        abort(404, 'Demo Excel file not found.');
+        abort(404, 'ZIP file not found.');
     }
 }

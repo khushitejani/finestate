@@ -63,7 +63,7 @@
             <input type="number" id="noInput" name="no" class="form-control" value="{{ $carshowroom->no }}"
                 required>
 
-            <button type="button" class="btn btn-info btn-sm generate-number-btn" data-table="CarShowroom">
+            <button type="button" class="btn btn-info btn-sm generate-number-btn" data-table="Carshowroom">
                 Generate Number
             </button>
         </div>

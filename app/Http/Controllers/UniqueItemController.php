@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\UniqueItem;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 
@@ -141,9 +142,10 @@ class UniqueItemController extends Controller
 
         $rawHeaders = array_shift($data);
         $headers = array_map(function ($h) {
-            return strtolower(trim(str_replace(' ', '_', $h)));
+            return strtolower(trim(str_replace([' ', '.'], '_', $h)));
         }, $rawHeaders);
 
+        Log::info($headers);
         $importedCount = 0;
         $errors = [];
         foreach ($data as $index => $row) {
@@ -151,9 +153,11 @@ class UniqueItemController extends Controller
 
             $coinData = [
                 'no'    => $rowData['no_'] ?? null,
-                'name'  => $rowData['name'] ?? null,
+                'name'  => $rowData['game_name'] ?? null,
                 'years' => $rowData['years'] ?? null,
-                'price' => $rowData['price'] ?? null,
+                'price' => isset($rowData['game_price'])
+                    ? floatval(str_replace(['$', ','], '', $rowData['game_price']))
+                    : 0,
             ];
             $fileName = null;
             $excelImage = $rowData['link'] ?? $rowData['link'] ?? null;
@@ -180,12 +184,12 @@ class UniqueItemController extends Controller
 
     public function downloadDemo()
     {
-        $filePath = public_path('assets/demo-files/unique_items.xlsx');
+        $filePath = public_path('assets/demo-files/UniqueItem.zip');
 
         if (file_exists($filePath)) {
-            return response()->download($filePath, 'unique_items_demo.xlsx');
+            return response()->download($filePath, 'UniqueItem.zip');
         }
 
-        abort(404, 'Demo Excel file not found.');
+        abort(404, 'ZIP file not found.');
     }
 }

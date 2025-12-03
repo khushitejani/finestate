@@ -179,12 +179,12 @@ class IslandController extends Controller
 
     public function downloadDemo()
     {
-        $filePath = public_path('assets/demo-files/islands.xlsx');
+       $filePath = public_path('assets/demo-files/Island.zip');
 
         if (file_exists($filePath)) {
-            return response()->download($filePath, 'islands_demo.xlsx');
+            return response()->download($filePath, 'Island.zip');
         }
 
-        abort(404, 'Demo Excel file not found.');
+        abort(404, 'ZIP file not found.');
     }
 }

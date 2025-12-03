@@ -180,7 +180,7 @@ class CardController extends Controller
     }
     public function downloadDemo()
     {
-        $filePath = public_path('assets/demo-files/cards.xlsx');
+        $filePath = public_path('/demo-files/cards.xlsx');
 
         if (file_exists($filePath)) {
             return response()->download($filePath, 'cards_demo.xlsx');

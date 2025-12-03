@@ -200,12 +200,12 @@ class CarshowroomController extends Controller
 
     public function downloadDemo()
     {
-        $filePath = public_path('assets/demo-files/carshowrooms.xlsx');
+        $filePath = public_path('assets/demo-files/Carshowroom.zip');
 
         if (file_exists($filePath)) {
-            return response()->download($filePath, 'carshowrooms_demo.xlsx');
+            return response()->download($filePath, 'Carshowroom.zip');
         }
 
-        abort(404, 'Demo Excel file not found.');
+        abort(404, 'ZIP file not found.');
     }
 }

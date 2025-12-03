@@ -154,7 +154,7 @@ class CoinController extends Controller
 
             $coinData = [
                 'name'  => $rowData['name'] ?? null,
-                'no'    => $rowData['no_'] ?? null,
+                'no'    => $rowData['no.'] ?? null,
                 'years' => $rowData['years'] ?? null,
                 'price' => isset($rowData['price'])
                     ? floatval(str_replace([',', '$'], '', $rowData['price']))
@@ -184,12 +184,12 @@ class CoinController extends Controller
     }
     public function downloadDemo()
     {
-        $filePath = public_path('assets/demo-files/coins.xlsx');
+        $filePath = public_path('assets/demo-files/Coin.zip');
 
         if (file_exists($filePath)) {
-            return response()->download($filePath, 'coins_demo.xlsx');
+            return response()->download($filePath, 'Coin.zip');
         }
 
-        abort(404, 'Demo Excel file not found.');
+        abort(404, 'ZIP file not found.');
     }
 }

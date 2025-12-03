@@ -63,7 +63,7 @@ class PropertyController extends Controller
 
         if ($request->hasFile('property_images')) {
             foreach ($request->file('property_images') as $file) {
-                $path = $file->store('properties', 'public'); 
+                $path = $file->store('properties', 'public');
                 $imagePaths[] = $path;
             }
         }
@@ -171,7 +171,7 @@ class PropertyController extends Controller
 
             foreach ($rows as $row) {
                 $rowData = array_combine($headers, $row);
-                $no = $rowData['no'] ?? ' ';
+                $no = $rowData['no.'] ?? ' ';
                 $address = $rowData['location'] ?? 'Unknown';
                 $price = isset($rowData['purchase_price']) ? floatval(str_replace(['$', ','], '', $rowData['purchase_price'])) : 0;
                 $incomePerHour = isset($rowData['income_per_hour']) ? floatval(str_replace(['$', ','], '', $rowData['income_per_hour'])) : 0;
@@ -199,12 +199,12 @@ class PropertyController extends Controller
     }
     public function downloadDemo()
     {
-        $filePath = public_path('assets/demo-files/properties.xlsx');
+        $filePath = public_path('assets/demo-files/Property.zip');
 
         if (file_exists($filePath)) {
-            return response()->download($filePath, 'properties_demo.xlsx');
+            return response()->download($filePath, 'Real State Property.zip');
         }
 
-        abort(404, 'Demo Excel file not found.');
+        abort(404, 'ZIP file not found.');
     }
 }

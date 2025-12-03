@@ -109,7 +109,7 @@ class BusinessTaxiController extends Controller
                 'price' => 'nullable|numeric',
             ]);
 
-            $data = $request->only(['name', 'class', 'no','resource', 'income_per_hour', 'price']);
+            $data = $request->only(['name', 'class', 'no', 'resource', 'income_per_hour', 'price']);
 
             if ($request->hasFile('image')) {
                 if ($taxi->image && Storage::disk('public')->exists($taxi->image)) {
@@ -243,11 +243,12 @@ class BusinessTaxiController extends Controller
 
     public function downloadDemo()
     {
-        $filePath = public_path('assets/demo-files/business_texi.xlsx');
+        $filePath = public_path('assets/demo-files/BusinessTexi.zip');
 
         if (file_exists($filePath)) {
-            return response()->download($filePath, 'business_taxis_demo.xlsx');
+            return response()->download($filePath, 'BusinessTexi.zip');
         }
-        abort(404, 'Demo Excel file not found.');
+
+        abort(404, 'ZIP file not found.');
     }
 }

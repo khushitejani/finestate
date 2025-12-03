@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('islands', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->string('image')->nullable();
+            $table->json('images')->nullable();
             $table->decimal('price', 15, 2);
             $table->text('description')->nullable();
             $table->timestamps();

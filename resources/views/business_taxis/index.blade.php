@@ -54,7 +54,7 @@
                                             <td>{{ $taxi->resource }}</td>
                                             <td>{{ $taxi->class ?? '-' }}</td>
                                             <td>{{ number_format($taxi->income_per_hour, 2) }}</td>
-                                            <td>{{ number_forma t($taxi->price, 2) }}</td>
+                                            <td>{{ number_format($taxi->price, 2) }}</td>
                                             <td class="text-end">
                                                 <a href="{{ route('business-taxis.edit', $taxi->id) }}"
                                                     class="btn btn-sm btn-outline-primary open-card-modal"

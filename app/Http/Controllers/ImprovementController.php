@@ -207,14 +207,12 @@ class ImprovementController extends Controller
 
     public function downloadDemo()
     {
-        $filePath = public_path('assets/demo-files/improvements.xlsx');
+        $filePath = public_path('assets/demo-files/Improvements.zip');
 
         if (file_exists($filePath)) {
-            return response()->download($filePath, 'improvements_demo.xlsx', [
-                'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-            ]);
+            return response()->download($filePath, 'Improvements.zip');
         }
 
-        abort(404, 'Demo Excel file not found.');
+        abort(404, 'ZIP file not found.');
     }
 }

@@ -8,10 +8,20 @@
                         <div class="card-body">
                             <div class="d-sm-flex align-items-center mb-4">
                                 <h4 class="card-title mb-sm-0">Cryptocurrency Inventory</h4>
-                                <a href="{{ route('cryptos.create') }}" class="btn btn-primary btn-sm ms-3 open-card-modal"
-                                    data-title="Create New Crypto">
-                                    <i class="icon-plus"></i> Create New
-                                </a>
+                                <div class="ms-auto d-flex align-items-center">
+                                    <a href="{{ route('cryptos.create') }}"
+                                        class="btn btn-primary btn-sm me-3 open-card-modal" data-title="Create New Crypto">
+                                        <i class="icon-plus"></i> Create New Crypto
+                                    </a>
+                                    <a class="btn btn-success btn-sm open-import-modal"
+                                        data-title="Cryptocurrency Bulk Import"
+                                        data-form-url="{{ route('bulk.import.form') }}"
+                                        data-form-submit="{{ route('cryptos.bulk.import') }}"
+                                        data-form-demo-download="{{ route('cryptos.demo.download') }}">
+                                        <i class="bi bi-cloud-arrow-up me-1"></i> Open Bulk Import
+                                    </a>
+
+                                </div>
                             </div>
 
                             <div class="table-responsive border rounded p-1">

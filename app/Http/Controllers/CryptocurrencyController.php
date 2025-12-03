@@ -5,7 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\Cryptocurrency;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Facades\Log;
+use PhpOffice\PhpSpreadsheet\IOFactory;
+
 
 
 class CryptocurrencyController extends Controller
@@ -110,23 +111,84 @@ class CryptocurrencyController extends Controller
 
         return response()->json(['success' => true, 'message' => 'Cryptocurrency deleted successfully!']);
     }
-    public function intradayChart()
+    public function bulkImport(Request $request)
     {
-        $id = 18;
-        $crypto = Cryptocurrency::find($id);
+        try {
+            if (!$request->hasFile('import_file')) {
+                return response()->json(['error' => 'No file uploaded'], 400);
+            }
 
-        if (!$crypto) {
+            $file = $request->file('import_file');
+            $extension = $file->getClientOriginalExtension();
+
+            if (!in_array($extension, ['xls', 'xlsx', 'csv'])) {
+                return response()->json(['error' => 'Invalid file type'], 400);
+            }
+
+            $spreadsheet = IOFactory::load($file->getPathname());
+            $sheet = $spreadsheet->getActiveSheet();
+            $rows = $sheet->toArray();
+
+            if (count($rows) < 2) {
+                return response()->json(['error' => 'File contains no data'], 400);
+            }
+
+            // Normalize headers
+            $rawHeaders = array_shift($rows);
+            $headers = array_map(function ($h) {
+                return strtolower(trim(str_replace([' ', '.', '-'], '_', $h)));
+            }, $rawHeaders);
+
+            $importedCount = 0;
+
+            foreach ($rows as $row) {
+                $rowData = array_combine($headers, $row);
+
+                $no = $rowData['no'] ?? null;
+
+                $name = $rowData['name']
+                    ?? $rowData['crypto_name']
+                    ?? $rowData['crypto']
+                    ?? 'Unknown';
+
+                $price = isset($rowData['price'])
+                    ? floatval(str_replace([',', '$'], '', $rowData['price']))
+                    : 0;
+
+                $cap = isset($rowData['cryptocurrencies_cap'])
+                    ? floatval(str_replace([',', '$'], '', $rowData['cryptocurrencies_cap']))
+                    : 0;
+
+                $availableForPurchase = isset($rowData['available_for_purchase'])
+                    ? intval($rowData['available_for_purchase'])
+                    : 0;
+
+                // Image file path from excel
+                $imagePath = $rowData['image'] ?? $rowData['logo'] ?? null;
+                $storedImagePath = $imagePath ? 'cryptos/' . ltrim($imagePath, '/') : 'default.jpeg';
+
+                Cryptocurrency::create([
+                    'no'                     => $no,
+                    'name'                   => $name,
+                    'price'                  => $price,
+                    'cryptocurrencies_cap'   => $cap,
+                    'available_for_purchase' => $availableForPurchase,
+                    'image'                  => $storedImagePath,
+                    'day_prices'             => ['base' => []],
+                ]);
+
+                $importedCount++;
+            }
+
+            return response()->json([
+                'success' => true,
+                'imported_count' => $importedCount
+            ]);
+        } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Cryptocurrency not found'
-            ], 404);
+                'error' => $e->getMessage(),
+            ], 500);
         }
-
-        $chartData = getChartDataForToday($crypto);
-
-        return response()->json([
-            'crypto' => $crypto->name,
-            'chart' => $chartData
-        ]);
     }
 }
