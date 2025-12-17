@@ -111,7 +111,7 @@
         </button>
     </div>
     <div class="navbar-menu-wrapper d-flex align-items-center">
-        <h5 class="mb-0 font-weight-medium d-none d-lg-flex">Welcome stellar dashboard!</h5>
+        <h5 class="mb-0 font-weight-medium d-none d-lg-flex">Welcome Richest: The Multi Trillionaire dashboard!</h5>
         <ul class="navbar-nav navbar-nav-right">
             <li class="nav-item dropdown d-none d-xl-inline-flex user-dropdown">
                 <a class="nav-link dropdown-toggle" id="UserDropdown" href="#" data-bs-toggle="dropdown"

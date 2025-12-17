@@ -62,12 +62,12 @@
                     <i class="icon-layers menu-icon"></i>
                 </a>
             </li>
-            {{-- <li class="nav-item">
+            <li class="nav-item">
                 <a class="nav-link" href="{{ route('nfts.index') }}" aria-expanded="false" aria-controls="nfts">
                     <span class="menu-title">NFTs</span>
                     <i class="icon-layers menu-icon"></i>
                 </a>
-            </li> --}}
+            </li>
             <li class="nav-item">
                 <a class="nav-link" href="{{ route('unique_items.index') }}" aria-expanded="false"
                     aria-controls="unique_items">
@@ -103,6 +103,27 @@
                     aria-controls="business-shippings">
                     <span class="menu-title">Business Shippings</span>
                     <i class="icon-directions menu-icon"></i>
+                </a>
+            </li>
+            <li class="nav-item {{ Request::is('constructions*') ? 'active' : '' }}">
+                <a class="nav-link" href="{{ route('constructions.index') }}" aria-expanded="false"
+                    aria-controls="constructions">
+                    <span class="menu-title">Constructions</span>
+                    <i class="icon-home menu-icon"></i>
+                </a>
+            </li>
+            <li class="nav-item {{ Request::is('business_slots*') ? 'active' : '' }}">
+                <a class="nav-link" href="{{ route('business_slots.index') }}" aria-expanded="false"
+                    aria-controls="business-slots">
+                    <span class="menu-title">Business Slots</span>
+                    <i class="icon-grid menu-icon"></i>
+                </a>
+            </li>
+            <li class="nav-item {{ Request::is('forbs_slots*') ? 'active' : '' }}">
+                <a class="nav-link" href="{{ route('forbs_slots.index') }}" aria-expanded="false"
+                    aria-controls="forbs-slots">
+                    <span class="menu-title">Forbs</span>
+                    <i class="icon-grid menu-icon"></i>
                 </a>
             </li>
 
@@ -150,7 +171,7 @@
             </li>
         </ul>
     </nav>
-{{-- 
+    {{-- 
 
     <style>
         /* Make sidebar sticky */

@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Storage;
-
 use App\Models\AircraftShop;
 use App\Models\BusinessShipping;
 use App\Models\BusinessTaxi;
@@ -25,8 +24,9 @@ use App\Models\Share;
 use App\Models\Stamp;
 use App\Models\UniqueItem;
 use App\Models\YatchShop;
-
-
+use App\Models\Construction;
+use App\Models\ForbsSlot;
+use App\Models\BusinessSlot;
 
 class TrashedController extends Controller
 {
@@ -52,6 +52,9 @@ class TrashedController extends Controller
             'stamps' => Stamp::onlyTrashed()->get(),
             'unique_items' => UniqueItem::onlyTrashed()->get(),
             'yatch_shops' => YatchShop::onlyTrashed()->get(),
+            'constructions' => Construction::onlyTrashed()->get(),
+            'forbs_slots' => ForbsSlot::onlyTrashed()->get(),
+            'business_slots' => BusinessSlot::onlyTrashed()->get(),
         ];
 
         return view('trashed.index', compact('trashedData'));

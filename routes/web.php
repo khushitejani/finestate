@@ -23,8 +23,12 @@ use App\Http\Controllers\InsightController;
 use App\Http\Controllers\BulkImportController;
 use App\Http\Controllers\BusinessShippingController;
 use App\Http\Controllers\BusinessTaxiController;
+use App\Http\Controllers\ConstructionController;
 use App\Http\Controllers\PolicyController;
 use App\Http\Controllers\TrashedController;
+use App\Http\Controllers\ForbsSlotController;
+use App\Http\Controllers\BusinessSlotController;
+
 
 Route::get('/', function () {
     return redirect()->route('dashboard');
@@ -101,6 +105,9 @@ Route::middleware('auth:admin')->group(function () {
 
     // nfts
     Route::resource('nfts', NFTController::class);
+    Route::post('/nfts/bulk-import', [NFTController::class, 'bulkImport'])->name('nfts.bulk.import');
+    Route::get('nfts/download-demo', [NFTController::class, 'downloadDemo'])->name('nfts.download.demo');
+
 
     // islands
     Route::resource('islands', IslandController::class);
@@ -154,8 +161,23 @@ Route::middleware('auth:admin')->group(function () {
     Route::post('/trashed/force-delete/{table}/{id}', [TrashedController::class, 'forceDelete'])->name('trashed.forceDelete');
     Route::get('/generate-number/{table}', [TrashedController::class, 'generateUniqueNumber']);
 
+    // constructions
+    Route::resource('constructions', ConstructionController::class);
+    Route::post('/constructions/bulk-import', [ConstructionController::class, 'bulkImport'])->name('constructions.bulk.import');
+    Route::get('/constructions/demo/download', [ConstructionController::class, 'downloadDemo'])->name('constructions.demo.download');
+
+    // policy
     Route::resource('policy', PolicyController::class);
     Route::post('/policy/upload-pdf', [PolicyController::class, 'uploadPdf'])->name('policy.uploadPdf');
+
+    //forbs slots
+    Route::resource('forbs_slots', ForbsSlotController::class);
+    Route::post('/forbs_slots/import', [ForbsSlotController::class, 'bulkImport'])->name('forbs_slots.bulk.import');
+    Route::get('/forbs_slots/demo/download', [ForbsSlotController::class, 'downloadDemo'])->name('forbs_slots.demo.download');
+
+    Route::resource('business_slots', BusinessSlotController::class);
+    Route::post('/bulk-import', [BusinessSlotController::class, 'bulkImport'])->name('business_slots.bulk.import');
+    Route::get('/demo-download', [BusinessSlotController::class, 'downloadDemo'])->name('business_slots.demo.download');
 });
 
 Route::fallback(function () {

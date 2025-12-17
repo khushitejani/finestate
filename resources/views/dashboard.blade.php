@@ -41,9 +41,15 @@
                                     'yacht shops' => 'icon-diamond',
                                     'cryptos' => 'icon-wallet',
                                     'insights' => 'icon-layers',
+                                    'business taxis' => 'icon-truck',
+                                    'business shippings' => 'icon-navigation',
+                                    'business slots' => 'icon-briefcase',
+                                    'construction' => 'icon-home',
+                                    'Forbs' => 'icon-tag',
+                                    'nft' => 'icon-layers',
                                 ];
 
-                                $modulesChunks = collect($modules)->chunk(4); // ensures 4 per row
+                                $modulesChunks = collect($modules)->chunk(4);
                             @endphp
 
                             @foreach ($modulesChunks as $chunk)

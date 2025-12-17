@@ -19,5 +19,6 @@ return Application::configure(basePath: dirname(__DIR__))
     })
     ->withSchedule(function (Schedule $schedule): void {
         $schedule->command('shares:update-prices')->everyMinute();
+         $schedule->command('crypto:update-prices')->everyMinute();
     })
     ->create();

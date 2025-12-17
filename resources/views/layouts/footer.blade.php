@@ -1,6 +1,6 @@
 <footer class="footer">
     <div class="d-sm-flex justify-content-center justify-content-sm-between">
-        <span class="text-muted text-center text-sm-left d-block d-sm-inline-block">Copyright © 2024 Stellar. All rights
+        <span class="text-muted text-center text-sm-left d-block d-sm-inline-block">Copyright © 2024 Richest: The Multi Trillionaire. All rights
             reserved.</span>
     </div>
 </footer>

@@ -37,13 +37,13 @@
         <div class="col-md-6">
             <label for="start_year" class="form-label">Start Year</label>
             <input type="number" name="start_year" id="start_year" class="form-control" placeholder="1963"
-                min="1900" max="{{ date('Y') }}" value="{{ old('start_year') }}" required>
+                min="1900" max="{{ date('Y') }}" value="{{ old('start_year') }}">
         </div>
 
         <div class="col-md-6">
             <label for="end_year" class="form-label">End Year</label>
             <input type="number" name="end_year" id="end_year" class="form-control" placeholder="1970" min="1900"
-                max="{{ date('Y') }}" value="{{ old('end_year') }}" required>
+                max="{{ date('Y') }}" value="{{ old('end_year') }}">
         </div>
     </div>
     <div class="mb-3">

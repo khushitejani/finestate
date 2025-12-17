@@ -32936,3 +32936,8 @@ div.tagsinput span.tag a {
 }
 
 /*# sourceMappingURL=style.css.map */
+
+  .brand-logo-mini > img{
+  width: 50px !important;
+  height: 50px !important;
+}

@@ -11,12 +11,10 @@ class CryptocurrencyController extends Controller
     public function CryptoCurrancyListAll()
     {
         $cryptos = Cryptocurrency::all();
-
         $data = $cryptos->map(function ($crypto) {
-            $chartData = null;
-            if (!empty($crypto->day_prices)) {
-                $chartData = getChartDataForToday($crypto);
-            }
+            $today = now()->toDateString();
+            $dayPrices = $crypto->day_prices ?? [];
+            $chartData = $dayPrices[$today] ?? [];
 
             return [
                 'id' => $crypto->id,

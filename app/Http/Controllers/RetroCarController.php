@@ -26,8 +26,8 @@ class RetroCarController extends Controller
         $request->validate([
             'no'         => 'nullable|numeric',
             'name'       => 'required|string|max:255',
-            'start_year' => 'required|integer|min:1900|max:' . date('Y'),
-            'end_year'   => 'required|integer|min:1900|max:' . date('Y'),
+            'start_year' => 'nullable|integer|min:1900|max:' . date('Y'),
+            'end_year'   => 'nullable|integer|min:1900|max:' . date('Y'),
             'image'      => 'nullable|image|max:2048',
             'price'      => 'required|numeric',
         ]);
@@ -52,8 +52,8 @@ class RetroCarController extends Controller
         $request->validate([
             'no'         => 'nullable|numeric',
             'name'       => 'required|string|max:255',
-            'start_year' => 'required|integer|min:1900|max:' . date('Y'),
-            'end_year'   => 'required|integer|min:1900|max:' . date('Y'),
+            'start_year' => 'nullable|integer|min:1900|max:' . date('Y'),
+            'end_year'   => 'nullable|integer|min:1900|max:' . date('Y'),
             'image'      => 'nullable|image|max:2048',
             'price'      => 'required|numeric',
         ]);

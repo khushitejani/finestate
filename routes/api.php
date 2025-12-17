@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\AircraftShopController;
 use App\Http\Controllers\Api\BusinessShippingController;
+use App\Http\Controllers\Api\BusinessSlotController;
 use App\Http\Controllers\Api\CardController;
 use App\Http\Controllers\Api\CarshowroomController;
 use App\Http\Controllers\Api\CoinController;
@@ -21,6 +22,8 @@ use App\Http\Controllers\Api\UniqueItemController;
 use App\Http\Controllers\Api\YatchShopController;
 use App\Http\Controllers\Api\BusinessTaxiController;
 use App\Http\Controllers\Api\PolicyController as ApiPolicyController;
+use App\Http\Controllers\Api\ConstructionController;
+
 
 Route::get('/cards', [CardController::class, 'CardListAll']);
 Route::get('/shares', [ShareController::class, 'ShareListAll']);
@@ -42,6 +45,10 @@ Route::get('/cryptocurrencies',[CryptocurrencyController::class,'CryptoCurrancyL
 Route::get('/businesstaxis', [BusinessTaxiController::class, 'BusinessTexilistAll']);
 Route::get('/businessshippings', [BusinessShippingController::class, 'BusinessShippinglistAll']);
 Route::get('/policies', [ApiPolicyController::class, 'Policylist']);
+Route::get('/business_slots', [BusinessSlotController::class, 'BusinessSlotAllList']);
+Route::get('/constructions', [ConstructionController::class, 'ConstructionListAll']);
+
+
 
 
 

@@ -164,7 +164,7 @@ class CryptocurrencyController extends Controller
                     : 0;
 
                 // Image file path from excel
-                $imagePath = $rowData['image'] ?? $rowData['logo'] ?? null;
+                $imagePath = $rowData['link'] ?? $rowData['link'] ?? null;
                 $storedImagePath = $imagePath ? 'cryptos/' . ltrim($imagePath, '/') : 'default.jpeg';
 
                 Cryptocurrency::create([
@@ -190,5 +190,16 @@ class CryptocurrencyController extends Controller
                 'error' => $e->getMessage(),
             ], 500);
         }
+    }
+
+    public function downloadDemo()
+    {
+        $filePath = public_path('assets/demo-files/Cryptocurrency.zip');
+
+        if (file_exists($filePath)) {
+            return response()->download($filePath, 'Cryptocurrency.zip');
+        }
+
+        abort(404, 'ZIP file not found.');
     }
 }
